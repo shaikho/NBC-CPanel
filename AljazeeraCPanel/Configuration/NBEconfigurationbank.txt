@@ -1,0 +1,2 @@
+http://baseurl.nbe.com.sd:80
+NBE_OMNI_Ph2/omniServices/bankRoutes

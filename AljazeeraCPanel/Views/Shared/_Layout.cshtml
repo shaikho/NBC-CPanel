@@ -1,0 +1,472 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title - NBE CPanel</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="~/Content/bootstrap(downloaded).min.css" rel="stylesheet" />
+    <!-- Our Custom CSS -->
+    @*<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">*@
+    <!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css">
+    <!-- Date Picker -->
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/Content/mdb.min.css" rel="stylesheet">
+    <script src="~/Content/jquery.min.js"></script>
+    <script src="~/Content/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/style.css">
+    <link href="~/Images/jsb_images/logo_transperant" rel="shortcut icon" type="image/x-icon" />
+    <script src="~/Scripts/sweetalert2.9.js"></script>
+
+
+    <style rel=stylesheet>
+        @@font-face {
+            font-family: 'Almarai-Regular';
+            src: url('../../fonts/Almarai-Regular.ttf') format('truetype');
+        }
+
+        * {
+            font-family: 'Almarai-Regular', sans-serif;
+        }
+
+        .navready {
+            min-height: 100vh;
+            background-color: #0A0A29;
+            background-image: url('../../Images/jsb_images/maze-white.png');
+        }
+
+        #sidebar {
+            background-color: #0A0A29;
+            background-image: url('../../Images/jsb_images/maze-white.png') !important;
+        }
+
+        #englishnavbar ul li a:hover {
+            background-color: #F39200;
+        }
+
+        .validation-summary-errors{
+            color:red;
+        }
+
+    </style>
+</head>
+
+@*  *@
+
+<style>
+    .ml7 {
+        position: relative;
+        font-weight: 900;
+        font-size: 3rem;
+        color: white;
+        z-index: 5;
+    }
+
+        .ml7 .text-wrapper {
+            position: relative;
+            display: inline-block;
+            padding-top: 0.2em;
+            padding-right: 0.05em;
+            padding-bottom: 0.1em;
+            overflow: hidden;
+        }
+
+        .ml7 .letter {
+            transform-origin: 0 100%;
+            display: inline-block;
+            line-height: 1em;
+        }
+
+    #overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: none; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+    }
+</style>
+
+<div id="overlay">
+    @*class="ml7"*@
+    <h1 class="m17" style="position:absolute;left:37%;top:45%">
+        <span class="text-wrapper">
+            <span class="letters">Processing your request ...</span>
+        </span>
+    </h1>
+</div>
+
+
+@*  *@
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <div class="navready">
+            <nav id="sidebar" style="width:30%;font-size:12px">
+                <div class="sidebar-header" style="background-color:  #ffffff; background-image: url('../../Images/jsb_images/maze-white.png'); ">
+                    <a href="@Url.Action("Index", "Home")"><img src="~/Images/jsb_images/Capture-removebg-preview.png" style="width:90%;height:6%;position: relative;margin-left:5%" /></a>
+                </div>
+
+                @Html.Action("TopMenu", "Home")
+            </nav>
+        </div>
+        <div class="container body-content" style="width:100%;height:100%;overflow-y:hidden">
+            @RenderBody()
+        </div>
+    </div>
+
+
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/mdb.js"></script>
+    @* datatables load *@
+    <script src="~/Content/jquery-1.11.3.min.js"></script>
+    <link href="~/Content/jquery.datatables.css" rel="stylesheet" />
+    <script src="~/Content/jquery.datatables.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    @* scripts *@
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-toggle').dropdown();
+        });
+    </script>
+
+    @*DataValidateLength*@
+    <script language="javascript" type="text/javascript">
+        $(document).ready
+            (
+                function () {
+                    $('input[data_val_length_max]').each
+                        (
+                            function (index) {
+                                $(this).attr('maxlength', $(this).attr('data_val_length_max'));
+                            });
+                });
+    </script>
+
+
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $(this).parent().siblings().removeClass('open');
+                    $(this).parent().toggleClass('open');
+                });
+            });
+        })(jQuery);
+    </script>
+
+    <style>
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+    </style>
+
+    <script>
+        var GetFavoriteMeter = function () {
+
+            $("#loadDiv").show();
+            var user_id = Session["UserID"].ToString();
+
+            $.ajax({
+                type: "POST",
+                url: "/ElectricityPayment/GetFavoriteMeter",
+                data: { user_id: user_id },
+                success: function (response) {
+                    $("#myModalBodyDiv").html(response);
+
+                    $("#myModal").modal("show");
+
+                }
+
+
+            });
+
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            $.fn.datepicker.defaults.format = "mm/dd/yyyy";
+            $('.datepicker').datepicker({
+                startDate: '-3d'
+            });
+            $('#sandbox-container .input-append.date').datepicker({
+
+            });
+            $('#sandbox-container .input-append.date').datepicker({
+                format: "dd/mm/yyyy",
+                cleFCBtn: true,
+                multidate: false,
+                multidateSeparator: "/"
+            });
+
+        });
+
+    </script>
+
+    @*<script>
+            $.widget.bridge('uibutton', $.ui.button);
+        </script>*@
+
+    <script type="text/javascript">
+
+        //setFavouriteMeter
+        function setFavouriteMeter(x) {
+            var meter = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#meterNo').val(meter);
+
+            $("#myModal").modal('hide');
+        }
+        //setFavouriteCard
+        function setFavouriteCard(x) {
+            var card = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            if ('#ToCardNo')
+                $('#cardNo').val(card);
+
+
+            $("#myModal").modal('hide');
+
+
+            var exp = $(x).parent().parent().find('td').eq(2).text().trim();
+
+            var month = exp.substring(2, 4);
+            var year = exp.substring(0, 2);
+            //if (month == '02') {
+            //    alert('feb');
+            //    //$('#Mymonth').find('option[value="2"]').attr('selected', 'selected');
+            //    //$('#Mymonth option[value=02]').attr('selected', 'selected');//.val("February");
+            //    $("#Mymonth select").val("02");
+            //}
+
+            //alert(month);
+            //alert(year);
+        }
+
+        //setFavouriteCard
+        function setFavouriteCardTo(x) {
+            var card = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#ToCardNo').val(card);
+
+            $("#myModal").modal('hide');
+        }
+
+        //setFavouritePhone
+        function setFavouritePhone(x) {
+            var phone = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#phoneNo').val(phone);
+
+            $("#myModal").modal('hide');
+        }
+
+
+        $(function () {
+            $('#example1').DataTable({
+                'ordering': false,
+                "aaSorting": []
+            });
+            $('#example3').DataTable();
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': false,
+                'info': true,
+                'autoWidth': false
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function isNumberKey(evt) {
+
+            var charCode = (evt.which) ? evt.which : event.keyCode
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+
+                return false;
+
+            return true;
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function isNumberKey2(txt, evt) {
+
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode == 46) {
+                //Check if the text already contains the . character
+                if (txt.value.indexOf('.') === -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (charCode > 31
+                    && (charCode < 48 || charCode > 57))
+                    return false;
+            }
+            return true;
+        }
+    </script>
+
+    <!----------------------------------------------------->
+    <script>
+        $(function () {
+            $('#salaryTable').DataTable();
+            //$('#salaryTable').columns.adjust().draw();
+        })
+    </script>
+    <!----------------------------------------------------->
+   
+    <!----------------------------------------------------->
+   
+
+    <!----------------------------------------------------->
+    <script type="text/javascript">
+        //Disable autocomplete throughout the site
+        $(document).ready(function () {
+            // alert("hi");
+            $("input:text,form").attr("autocomplete", "off");
+            $("input:password,form").attr("autocomplete", "off");
+            $("input:TextBoxFor,form").attr("autocomplete", "off");
+            $('#overlay').hide();
+        })
+    </script>
+
+    <!----------------------------------------------------->
+    <!-- Scripts for Own Transfer-->
+    <!----------------------------------------------------->
+    <!--ON CLICK SUBMIT BUTTON -->
+
+    <script type="text/javascript">
+        $(document).on('invalid-form.validate', 'form', function () {
+            var button = $(this).find('input[type="submit"]');
+            setTimeout(function () {
+                button.removeAttr('disabled');
+            }, 1);
+        });
+        $(document).on('submit', 'form', function () {
+            var button = $(this).find('input[type="submit"]');
+            setTimeout(function () {
+                $('#overlay').show();
+                setTimeout(function () {
+                    $('#overlay').hide();
+                }, 10000)
+            }, 0);
+        });
+        function submitanddisable() {
+            $("#form").submit();
+            this.disable = "disable";
+        }
+    </script>
+
+    <script type="text/javascript">
+        window.onbeforeunload = function () {
+
+            $("#periodCheck").click(function () {
+                $("#NoOfTransDropDown").attr("disabled", true);
+            });
+
+            $("#noOfTransCheck").click(function () {
+                $("#NoOfTransDropDown").attr("disabled", false);
+            });
+
+        }
+      
+    </script>
+
+    @*<script src="~/Scripts/jquery.min.js"></script>*@
+    <script src="~/Scripts/bootstrap.min.js"></script>
+   
+    <!--<script src="~/Scripts/daterangepicker.js"></script>-->
+    <!-- datepicker -->
+    <!--<script src="~/Scripts/bootstrap-datepicker.min.js"></script>-->
+
+
+    <!-- FastClick -->
+    @*<script src="~/Scripts/fastclick.js"></script>*@
+    <!-- iCheck 1.0.1 -->
+ 
+    <script src="~/content/jquery.datatables.js"></script>
+  
+    @*<script src="~/Scripts/anime.min.js"></script>*@
+    
+
+    <script>
+        // Wrap every letter in a span
+        var textWrapper = document.querySelector('.ml7 .letters');
+        textWrapper.innerHTML = textWrapper.textContent.replace(/\S/g, "<span class='letter'>$&</span>");
+
+        anime.timeline({ loop: true })
+            .add({
+                targets: '.ml7 .letter',
+                translateY: ["1.1em", 0],
+                translateX: ["0.55em", 0],
+                translateZ: 0,
+                rotateZ: [180, 0],
+                duration: 750,
+                easing: "easeOutExpo",
+                delay: (el, i) => 50 * i
+            }).add({
+                targets: '.ml7',
+                opacity: 0,
+                duration: 1000,
+                easing: "easeOutExpo",
+                delay: 1000
+            });
+    </script>
+
+
+    @* scripts *@
+
+    @RenderSection("scripts", required: false)
+ 
+    <script>
+        setInterval(function () { $("#overflow").hide(); }, 10000);
+        console.log("1");
+    </script>
+
+</body>
+</html>

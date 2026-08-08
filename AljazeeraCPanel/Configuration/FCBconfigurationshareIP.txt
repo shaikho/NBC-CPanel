@@ -1,0 +1,2 @@
+http://172.16.214.42:8765
+JSB_OMNI_Ph2/omniServices/sharedRoutes

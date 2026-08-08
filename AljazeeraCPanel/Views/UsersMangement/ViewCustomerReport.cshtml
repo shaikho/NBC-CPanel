@@ -1,0 +1,160 @@
+﻿@model IEnumerable<AljazeeraCPanel.Models.UsersMangementViewModel>
+
+@{
+    ViewBag.Title = "ViewCustomerReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content" style="overflow-x:hidden">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Customers Report</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Registered Customers Log
+                </ol>
+                <div class="box-body">
+                    <div class="col-lg-12 col-md-11 col-sm-11">
+                        <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                        <div class="col-md-3">
+                            <input class="form-control" type="date" name="fromdate" id="fromdate1">
+                        </div>
+                        <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                        <div class="col-md-4">
+                            <input class="form-control" type="date" name="todate" id="todate1">
+                        </div>
+                        <br /><br />
+                        <div class="col-md-12 col-md-offset-5">
+                            <input class="btn btn-md" id="filtercard" type="button" style="color:white;font-size:small" value="Filter" />
+                        </div>
+                        <br /><br />
+                    </div>
+
+                    <label id="customerscount" class="control-label col-md-4" style="margin-top:0.5%;font-size:15px"></label>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <table id="example" class="display nowrap" style="font-size:small">
+                        <thead>
+                            <tr>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.Username)
+                                </th>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.LoginTime)
+                                </th>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.IpAddress)
+                                </th>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.UserStatus)
+                                </th>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.Category)
+                                </th>
+                                <th style="font-size:small">
+                                    @Html.DisplayNameFor(model => model.UserID)
+                                </th>
+                                <th style="font-size:small">
+                                    Action
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.Username)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.LoginTime)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.IpAddress)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.UserStatus)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.Category)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.UserID)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.ActionLink("Details", "ViewCustomerDetails", new { CustomerID = item.UserID }, new { @class = "btn btn-block btn-flat ", value = "Details" })
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <br />
+                </div>
+            </div>
+        </div>
+        @*@using (Html.BeginForm("PrintUsersLog", "User", new { id = "form" }))*@
+        @*@using (Html.BeginForm("CreatePdf", "User", new { id = "form" })*@
+        @using (Html.BeginForm("SaveCustomerPDF", "UsersMangement", new { id = "form" }))
+        {
+            <div class="form-group">
+                <div class="col-xs-8 col-xs-offset-5">
+                    <input type="submit" onclick="submitanddisable()" value="Print" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<script>
+    $("#filtercard").on("click", function () {
+        if ($("#fromdate1").val() == "" || $("#todate1").val() == "") {
+            alert("Please select date filter");
+        } else {
+            $('#overlay').show();
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '/UsersMangement/FilterDateCustomerLogReport',
+                dataType: 'json',
+                data: {
+
+                    fromdate: $("#fromdate1").val(),
+                    todate: $("#todate1").val()
+
+                },
+                contentType: 'application/json',
+                success: function (result) {
+                    $("#example").dataTable().fnClearTable();
+                    $.each(result, function (status, data) {
+                        $.each(data, function (innerstatus, innerdata) {
+                            var data = [];
+                            data.push('<p style="font-size:small;color:black">' + innerdata.Username + '</p>');
+                            data.push('<p style="font-size:small;color:black">' + innerdata.LoginTime + '</p>');
+                            data.push('<p style="font-size:small;color:black">' + innerdata.IpAddress + '</p>');
+                            data.push('<p style="font-size:small;color:black">' + innerdata.userstatus + '</p>');
+                            data.push('<p style="font-size:small;color:black">' + innerdata.category + '</p>');
+                            data.push('<p style="font-size:small;color:black">' + innerdata.UserID + '</p>');
+                            data.push('<a class="btn btn-block btn-flat  waves-effect waves-effect" href="/UsersMangement/ViewCustomerDetails?CustomerID='+innerdata.UserID+'" style="color:white">Details</a>');
+                            $("#example").dataTable().fnAddData(data);
+                        });
+                    });
+                    $('#customerscount').text('Customers Count : ' + result.data[0].FailedLogin);
+                    $('#overlay').hide();
+                }
+            });
+        }
+    });
+</script>

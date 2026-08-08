@@ -1,0 +1,80 @@
+﻿@model IEnumerable<AljazeeraCPanel.Models.CustomerAuthorization>
+
+
+
+<header>
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example1').DataTable();
+        });
+    </script>
+</header>
+<div class="box-body">
+    <div class="table-responsive col-md-10 col-md-offset-1">
+        <table id="example1" class="display nowrap">
+            <thead>
+                <tr style="font-size:small">
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.CustomerID)
+                    </th>
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.Customername)
+                    </th>
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.RIM)
+                    </th>
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.custsts)
+                       
+                    </th>
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.phonennumber)
+                    </th>
+                    <th style="font-size:small" class="col-md-6">
+                        @Html.DisplayNameFor(model => model.createdby)
+                    </th>
+                    <th style="font-size:small">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            @foreach (var item in Model)
+            {
+                <tr style="font-size:small">
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.CustomerID)
+                    </td>
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.Customername)
+                    </td>
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.RIM)
+                    </td>
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.custsts)
+                        @Html.HiddenFor(modelItem => item.stscode)
+                    </td>
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.phonennumber)
+                    </td>
+                    <td style="font-size:small">
+                        @Html.DisplayFor(modelItem => item.createdby)
+                    </td>
+                    <td style="font-size:small;color-rendering:initial">
+                        @Html.ActionLink("Authorize", "Authorize", new { id = item.CustomerID , sts = item.stscode }, new { @style = "color:black;" }) | @Html.ActionLink("Reject", "Reject", new { id = item.CustomerID , sts = item.custsts }, new { @style = "color:black;" })
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<script>
+    setInterval(
+        $("#example1").load()
+        , 5000);
+    </script>

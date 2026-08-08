@@ -1,0 +1,165 @@
+﻿@using AljazeeraCPanel.Models;
+@model  AljazeeraCPanel.Models.Custreport
+
+@{
+    ViewBag.Title = "Account to account report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<CustomerTransferReportViewModel> accounttransfertransactions = Session["accounttranfertransactions"] as List<CustomerTransferReportViewModel>;
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        body {
+            overflow-y: visible
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Transactions Details</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Account to account transactions
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="date" name="fromdate" id="fromdate">
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="date" name="todate" id="todate">
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-1" style="margin-top:0.5%">Branch</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch...", @id = "branchfilter" })
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction status</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CategoryCode, Model.transactions_statuses, new { @class = "form-control ", @placeholder = "Branch...", @id = "statusfilter" })
+                                </div>
+                                <br />
+                                <br />
+                                <br />
+                                <div class="col-md-12 col-md-offset-5">
+                                    <input class="btn btn-md" id="filteraccount"  onclick=" filteration()" type="button" style="color:white;font-size:small" value="Filter" />
+                                </div>
+                                <br /><br />
+                            </div>
+                            <hr />
+                            <table id="example" class="display nowrap" style="font-size:small">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small">
+                                            From Account
+                                        </th>
+                                        <th style="font-size:small">
+                                            To Account
+                                        </th>
+                                        <th style="font-size:small">
+                                            Amount
+                                        </th>
+                                        <th style="font-size:small">
+                                            Recipient Name
+                                        </th>
+                                        <th style="font-size:small">
+                                            Status
+                                        </th>
+                                        <th style="font-size:small">
+                                            FT
+                                        </th>
+                                        <th style="font-size:small">
+                                            Date
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in accounttransfertransactions)
+                                    {
+                                        <tr>
+                                            <td style="font-size:small">
+                                                @transaction.alsocustomername
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranToAccount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranReqAmount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.CustomerName
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranStatus
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.FT
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranDate
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @*<div class="col-md-6">
+        <form>
+            <input type="text" id="number" value="0" />
+            <button type="button" class="btn" id="btn" onclick="incrementer()" value="Increase"></button>
+        </form>
+    </div>*@
+
+
+<div class="form-group" style="margin-bottom : 5%" >
+    <div class="col-md-12 col-md-offset-5">
+        @*<button onclick="buttonClick();">Next</button>*@
+        <input type="button" id="filteraccount" onclick="increment()" value="Next" style="background-color:#EB9815" class="btn btn-block btn-flat" />
+        <input type="button"  id="filteraccount" onclick="decrement()" value="Back" style="background-color:#EB9815" class="btn btn-block btn-flat" />
+        @*<div id="showPageCounter"></div>
+        <input type="text" id="inc" />*@
+        @*@Html.TextBoxFor(model => model.inc, new { id = "inc", value = "0" })*@
+        @*<button onclick="buttonClickdec();">Back</button>
+        @Html.TextBoxFor(model => model.increser, new { id = "incdec", value = "0" })*@
+        @*<input type="text" id="incdec" value="0"></input>*@
+    </div>
+    </div>
+
+    @using (Html.BeginForm("saveaccounttoaccountreport", "CustomerReport", new { id = "form" }))
+    {
+        <div class="form-group" style="margin-top :3%">
+            <div class="col-md-12 col-md-offset-5">
+                <input type="submit" onclick="submitanddisable()" value="Print Report" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+            </div>
+        </div>
+    }
+</section>
+
+<script src="~/Scripts/account-to-account.js"></script>

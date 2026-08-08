@@ -1,0 +1,217 @@
+﻿@model  AljazeeraCPanel.Models.Custreport
+@using AljazeeraCPanel.Models;
+
+@{
+    ViewBag.Title = "Transactions info";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<CustomerTransferReportViewModel> transactionsinfo = Session["transactionsinfo"] as List<CustomerTransferReportViewModel>;
+
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        body {
+            overflow: scroll;
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Transactions Report</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Transactions Details
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="date" name="fromdate" id="fromdate1">
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                                <div class="col-md-4">
+                                    <input class="form-control" type="date" name="todate" id="todate1">
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-1" style="margin-top:0.5%">Branch</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch...", @id = "branchfilter1" })
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction status</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CategoryCode, Model.transactions_statuses, new { @class = "form-control ", @placeholder = "Branch...", @id = "statusfilter1" })
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-1" style="margin-top:0.5%">User account</label>
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "User account", @id = "useraccount" })
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">To Account / Card</label>
+                                <div class="col-md-4">
+                                    @Html.TextBoxFor(model => model.ToAccount, new { @class = "form-control ", @placeholder = "To Account / Card", @id = "toaccount" })
+                                </div>
+                                <br />
+                                <br />
+                                <br />
+                                <div class="col-md-12 col-md-offset-5">
+                                    <input class="btn btn-md" id="filter" type="button" style="color:white;font-size:small" value="Filter" />
+                                </div>
+                                <br /><br />
+                            </div>
+                            <hr />
+                            <table id="example" class="display nowrap" style="font-size:small;overflow:scroll">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small">
+                                            Customer Name
+                                        </th>
+                                        <th style="font-size:small">
+                                            Account Number
+                                        </th>
+                                        <th style="font-size:small">
+                                            Date
+                                        </th>
+                                        <th style="font-size:small">
+                                            Account from
+                                        </th>
+                                        <th style="font-size:small">
+                                            Account to
+                                        </th>
+                                        <th style="font-size:small">
+                                            Transaction name
+                                        </th>
+                                        <th style="font-size:small">
+                                            Amount
+                                        </th>
+                                        <th style="font-size:small">
+                                            Status
+                                        </th>
+                                        <th style="font-size:smaall">
+                                            Transaction response
+                                        </th>
+                                        <th style="font-size:small">
+                                            Phone number
+                                        </th>
+                                        <th style="font-size:small">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in transactionsinfo)
+                                    {
+                                        <tr>
+                                            <td style="font-size:small">
+                                                @transaction.CustomerName
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.AccountNumber
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranDate
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranFromAccount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranToAccount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranName
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranAmount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranStatus
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.ResponseStatus
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.UserMobile
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Details", "TransactionDetails", new { TransactionID = transaction.TranID }, new { @class = "btn btn-block btn-flat ", value = "Details" })
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <br />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<script>
+
+    $("#filter").on("click", function () {
+        if ($("#fromdate1").val() == "" || $("#todate1").val() == "") {
+            alert("Please select date filter");
+        } else {
+            $('#overlay').show();
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '/CustomerReport/FilteredTransactionsInfo',
+                dataType: 'json',
+                data: {
+                    fromdate: $("#fromdate1").val(),
+                    todate: $("#todate1").val(),
+                    branch: $("#branchfilter1").val(),
+                    status: $("#statusfilter1").val(),
+                    accountnumber: $("#useraccount").val(),
+                    toaccount: $("#toaccount").val()
+                },
+                contentType: 'application/json',
+                success: function (result) {
+                    console.log(result);
+                    $("#example").dataTable().fnClearTable();
+                    $.each(result, function (status, data) {
+                        $.each(data, function (innerstatus, innerdata) {
+                            var data = [];
+                            data.push(innerdata.CustomerName);
+                            data.push(innerdata.AccountNumber);
+                            data.push(innerdata.TranDate);
+                            data.push(innerdata.TranFromAccount);
+                            data.push(innerdata.TranToAccount);
+                            data.push(innerdata.TranName);
+                            data.push(innerdata.TranAmount);
+                            data.push(innerdata.TranStatus);
+                            data.push(innerdata.ResponseStatus);
+                            data.push(innerdata.UserMobile);
+                            data.push('<a href="/CustomerReport/TransactionDetails?TransactionID=' + innerdata.TranID + '?class=btn btn-bloc btn-flat" style="color:black">Details</a>');
+                            $("#example").dataTable().fnAddData(data);
+                        });
+                    });
+                    $('#overlay').hide();
+                }
+            });
+        }
+    });
+
+</script>

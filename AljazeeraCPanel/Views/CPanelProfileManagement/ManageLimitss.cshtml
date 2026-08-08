@@ -1,0 +1,135 @@
+﻿@model  IEnumerable<AljazeeraCPanel.Models.Limit>
+
+
+<header>
+    <script src="~/Content/jquery-1.11.3.min.js"></script>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-auto ">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <h2>Customers Profile Informations</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Manage Limit For Bank Services
+                </ol>
+
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success! </strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+                @if (ViewBag.FailMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>failed! </strong> @ViewBag.FailMessage
+                    </div>
+                }
+                <div class="box-body col-md-10 col-md-offset-1">
+                    <div class="table-responsive">
+                        <table id="example" class="display nowrap">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.service_name)
+                                    </th>
+                                    @*<th style="font-size:small;text-align:center">
+                                            @Html.DisplayNameFor(model => model.Transaction_per_day)
+                                        </th>*@
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.Transaction_amount)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.Transactions_accumulation)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)//.OrderBy(item => item.user_id)
+                                {
+                                    <tr>
+                                        <td style="font-size:small;text-align:center" class="col-md-1">
+                                            @Html.DisplayFor(modelItem => item.service_name)
+                                        </td>
+                                        @*<td style="font-size:small;text-align:center" class="col-md-3">
+                                                @Html.DisplayFor(modelItem => item.amount_limit)
+                                            </td>*@
+                                        <td style="font-size:small;text-align:center" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.Transaction_amount)
+                                        </td>
+                                        <td style="font-size:small;text-align:center" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.Transactions_accumulation)
+                                        </td>
+                                        <td class="col-md-2">
+                                            <table>
+                                                <tr>
+                                                    <td class="col-md-2"> @Html.ActionLink("update", "ManageLimits", new { id = item.service_name }, new { @class = "btn btn-block btn-flat", @style = "background-color:#fdc654 ,color:green; " })</td>
+                                                    @*@Html.ActionLink("Update", "ManageLimits", new { id = item.service_name }, new { @class = "btn btn-block btn-flat", @style = "color:green;" })*@
+
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var alert = $('.alert');
+    $('.button').click(function () {
+        alert.addClass('open');
+    });
+    $('span.close').on('click', function () {
+        alert.removeClass('open');
+    });
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}
+
+@if (ViewBag.FailMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}
+@*@if (ViewBag.SuccessMessage != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.SuccessMessage");
+            };
+        </script>
+    }*@

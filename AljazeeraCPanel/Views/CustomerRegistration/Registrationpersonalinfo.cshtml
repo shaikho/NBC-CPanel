@@ -1,0 +1,356 @@
+﻿@model AljazeeraCPanel.Models.CustomerRegpersonalinfo
+
+@using AljazeeraCPanel.Models;
+
+
+@{
+    ViewBag.Title = "Registrationpersonalinfo";
+
+   var imageBase64 = ViewBag.ImageBase64 as string; 
+}
+
+<div class="box-header with-border">
+    <h3 class="box-title my-box-header"></h3>
+</div>
+<h2>Information Customer Registration</h2>
+<br />
+<ol class="breadcrumb" style="font-size:medium">
+    Personal Information
+</ol>
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="connectedSortable col-md-10 " >
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        @*<div class="col-md-10">*@
+                            <br />
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    @*<div class="form-group">
+                                            @Html.LabelFor(model => model.Profile, new { @class = "control-label col-md-4" })
+                                            <div class="col-md-6">
+                                                @Html.DropDownListFor(model => model.profileCode, Model.Profiles, "-- Select Profile --", new { @class = "form-control ", @placeholder = "Branch..."})<h4 style="color:red;position:absolute;left:98%;top:-8%">*</h4>
+                                                @Html.ValidationMessageFor(model => model.profileCode)
+                                            </div>
+                                        </div>*@
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.NID, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-3">
+                                            @Html.TextBoxFor(model => model.NID, new { @class = "form-control ", @placeholder = "NID #..." })
+                                            @Html.ValidationMessageFor(model => model.NID)
+                                        </div>
+                                        <div class="col-xs-2">
+                                            @*col-xs-5 col-xs-offset-5"*@
+                                            <input type="submit" value="Submit" class="btn btn-block btn-flat" />
+                                        </div>
+                                    </div>
+
+                                 
+                                    <!--<div class="form-group">
+                                        <div class="col-xs-2">-->
+                                            @*col-xs-5 col-xs-offset-5"*@
+                                            <!--<input type="submit" value="Submit" class="btn btn-block btn-flat" />
+                                        </div>
+                                    </div>-->
+                                </div>
+                            }
+
+                            @if (Model.data.Equals(true))
+                            {
+                                <section class="content">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title my-box-header"></h3>
+                                    </div>
+                                    @*<h2>New Customer Registration</h2><br />*@
+                                    <ol class="breadcrumb" style="font-size:medium;margin-right :20px">
+                                        Customer  Information
+                                    </ol>
+                                    <div class="row col-md-offset-1">
+                                        <div class="col-md-8 col-md-offset-2">
+                                            <div class="box box-info">
+                                                <div class="box-header with-border">
+                                                    <div class="box-tools pull-right">
+                                                    </div>
+                                                </div>
+                                                <div class="box-body">
+                                                    @using (Html.BeginForm())
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        @Html.ValidationSummary(true)
+
+                                                        if (!string.IsNullOrEmpty(imageBase64))
+                                                        {
+
+                                                            <img src="data:image/jpeg;base64,@imageBase64" alt="Image" style="padding-left:120px" />
+
+                                                        }
+
+                                                        else
+                                                        {
+                                                            <p>No image available.</p>
+                                                        }
+                                                        <br />
+                                                        <br />
+                                                        <label class="control-label col-md-8" style="margin-top:0.5% ;font-weight: bold ;">Customer Details</label>
+                                                        <table id="example" class="table display table-bordered table-hover border-top" style="font-size: medium; font-weight: bold">
+                                                            @if (Model.Name != "")
+                                                            {
+                                                                <tr style="background-color:lightsteelblue">
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.First_Names != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.First_Names)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.First_Names)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            @if (Model.Last_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Last_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Last_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            @if (Model.Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Mother_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Mother_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Mother_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Address != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Address)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Address)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Gender != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Gender)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Gender)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Birth_date != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Birth_date)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Birth_date)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            @if (Model.Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Full_Customer)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Name)
+                                                                        @Html.DisplayFor(model => model.Father_Name)
+                                                                        @Html.DisplayFor(model => model.Grand_Father_Name)
+                                                                        @Html.DisplayFor(model => model.Gre_Gra_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Full_Father)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Father_Name)
+                                                                        @Html.DisplayFor(model => model.Grand_Father_Name)
+                                                                        @Html.DisplayFor(model => model.Gre_Gra_Father_Name)
+                                                                        @*@Html.DisplayFor(model => model.Gre_Gra_Father_Name)*@
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                                @if (Model.Mother_Name != "")
+                                                                {
+                                                                    <tr>
+                                                                        <th style="font-size:small">
+                                                                            @Html.DisplayNameFor(model => model.Full_Mother)
+                                                                        </th>
+                                                                        <td style="font-size:small">
+                                                                            @Html.DisplayFor(model => model.Mother_Name)
+                                                                            @Html.DisplayFor(model => model.Mot_Father_Name)
+                                                                            @Html.DisplayFor(model => model.Mot_Gra_Father_Name)
+                                                                            @Html.DisplayFor(model => model.Mot_Gre_Gra_Father_Name)
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        <br />
+
+
+                                                        @*<label class="control-label col-md-8" style="margin-top: 0.5%; font-weight: bold">More Customer Details</label>
+                                                        <table id="example2" class="table display table-bordered table-hover border-top" style="font-size: medium; font-weight: bold">
+                                                            @if (Model.Grand_Father_Name != "")
+                                                            {
+                                                                <tr style="background-color:lightsteelblue">
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Grand_Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Grand_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Gre_Gra_Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Gre_Gra_Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Gre_Gra_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Mot_Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Mot_Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Mot_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.Mot_Gra_Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Mot_Gra_Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Mot_Gra_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            @if (Model.Mot_Gre_Gra_Father_Name != "")
+                                                            {
+                                                                <tr>
+                                                                    <th style="font-size:small">
+                                                                        @Html.DisplayNameFor(model => model.Mot_Gre_Gra_Father_Name)
+                                                                    </th>
+                                                                    <td style="font-size:small">
+                                                                        @Html.DisplayFor(model => model.Mot_Gre_Gra_Father_Name)
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+
+
+
+
+                                                        </table>*@
+
+
+
+                                                        @*if (!string.IsNullOrEmpty(imageBase64))
+            {
+                <img src="data:image/jpeg;base64,@imageBase64" alt="Image" />
+            }
+            else
+            {
+                <p>No image available.</p>
+            }*@
+                                                        <br />
+
+                                                        <br />
+
+
+
+                                                        <br />
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+
+                            }
+                        @*</div>*@
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+@*<script>
+        document.getElementById("UserName").attributes(read, true);
+    </script>*@
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>
+}
+
+<script>
+    $(document).ready(function () {
+        var table = $('display').DataTable();
+        //var table2 = $('#example2').DataTable();
+    });
+</script>

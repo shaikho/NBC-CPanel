@@ -1,0 +1,246 @@
+﻿@model  AljazeeraCPanel.Models.Loginmodel
+
+@{
+    Layout = null;
+}
+
+
+
+
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <!-- Bootstrap CSS CDN -->
+    <link href="~/Content/bootstrap(downloaded).min.css" rel="stylesheet" />
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css">
+    @*<link href="~/Content/mdb.min.css" rel="stylesheet">*@
+    @*<link href="~/Content/otherfonts.css" rel="stylesheet" />*@
+    @*<link href="https://fonts.googleapis.com/css?family=Roboto:400i&display=swap" rel="stylesheet">*@
+    <link href="~/Images/Capture.jpg" rel="shortcut icon" type="image/x-icon" />
+
+    <title>Login</title>
+
+    <style type="text/css">
+        * {
+            font-family: Roboto;
+        }
+
+        html, body {
+            font-family: 'Roboto', sans-serif;
+            color: #24295E;
+            padding: 0px;
+            margin: 0px;
+            background-color: #24295E;
+        }
+
+            html h3, body h3 {
+                color: #24295E;
+            }
+
+        input[type='text']::-webkit-input-placeholder, input[type='password']::-webkit-input-placeholder {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .login-panel {
+            width: 380px;
+            height: 551px; /*222*/
+            /*   width: 25%;
+            height: 30%;
+               width: 250px;
+            height: 220px;
+         */
+
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            margin-left: 3%;
+            margin: auto;
+            display: block;
+            position: absolute;
+            text-align: center;
+            background-color: white;
+            border-right: 1px solid #24295E;
+            box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);
+        }
+
+
+
+
+            .login-panel input[type='text'], .login-panel input[type='password'] {
+                margin: 0 auto;
+                width: 80%;
+                display: block;
+                border: none;
+                padding: 10px 0;
+                border-bottom: solid 1px #24295E;
+                transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #24295E 4%);
+                background-position: -200px 0;
+                background-size: 200px 100%;
+                background-repeat: no-repeat;
+                color: #24295E;
+            }
+
+                .login-panel input[type='text']:focus, .login-panel input[type='password']:focus {
+                    box-shadow: none;
+                    outline: none;
+                    background-position: 0 0;
+                }
+
+                    .login-panel input[type='text']:focus::-webkit-input-placeholder, .login-panel input[type='password']:focus::-webkit-input-placeholder {
+                        color: #24295E;
+                        font-size: 11px;
+                        transform: translateY(-20px);
+                        visibility: visible !important;
+                    }
+
+            .login-panel .btn-submit {
+                background: #24295E;
+                cursor: pointer;
+                margin: 0 auto;
+                position: relative;
+                padding: 5px;
+                width: 80%;
+                color: white;
+                box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.2);
+            }
+
+                .login-panel .btn-submit:hover {
+                    background: #24295E;
+                }
+
+        .ripple {
+            background-color: rgba(255, 255, 255, 0.26);
+            border-radius: 100%;
+            animation: ripple 1s ease-out;
+        }
+    </style>
+</head>
+
+<body style="overflow-x:hidden;overflow-y:hidden">
+    @*<div class="col-sm-12 col-sm-offset-5 col-md-12 col-md-offset-4 col-lg-12 col-lg-offset-4 col-xl-12 col-xl-offset-5">
+
+            <div class="row">
+                <img src="~/Images/Capture.jpg" style="width: 25.1%; height: 19.5%; margin-top: 3%; margin-left: 4.2%; border-right: 1px solid #24295E; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
+            </div>
+        </div>*@
+
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <div class="login-panel" ng-app='materialRipple' style="">
+        @using (Html.BeginForm(new { id = "form" }))
+        {
+
+            <div class="row">
+                <img src="~/Images/Capture.jpg" style="width: 88%; margin-top: 3%; margin-left: 3%; border-right: 1px solid #24295E; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
+            </div>
+
+            @Html.AntiForgeryToken();
+            @Html.ValidationSummary(true);
+            <h3 style="font:bolder;font-family: 'Roboto', sans-serif;">IBANKING CPanel</h3>
+            @Html.TextBoxFor(model => model.Username, new {  @placeholder = "Username", @style = "font-family: 'Roboto', sans-serif;" })
+            @Html.ValidationMessageFor(model => model.Username, "", new { @class = "text-danger" })
+            <br />
+            @Html.TextBoxFor(model => model.Password, new
+            {
+                @class = "",
+                minlength = "8",
+                maxlength = "20",
+                pattren = "\\[A-Za-z0-9]{8,20}",
+                @placeholder = "Password",
+                @type = "password",
+                @style = "font-family: 'Roboto', sans-serif;"
+            })
+            <br />
+            <br />
+            @*<div ripple ripple-class="ripple" ripple-diameter="50" ripple-stream="true" class="btn-submit">Login</div>*@
+            @*<input type="submit" value="Login" style="width:80%;background-color:#24295E;border-color:#24295E;color:white;font-family: 'Roboto', sans-serif;" onclick="returndisplayprogressmessage(this, 'Loggin in...' );" />*@
+            <button type="submit" onclick='submitanddisable();' class="btn" style="background-color:#24295E;font-family: 'Roboto', sans-serif;color:white;font-size:small;margin-top:-5px;width:85%;height:30px">LOGIN</button>
+
+        }
+        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+    </div>
+</body>
+
+</html>
+<script>
+    angular.module('materialRipple', [])
+        .directive('ripple', ['$window', function ($window) {
+            var linkFn = function (scope, element, attrs) {
+                element.css('overflow', 'hidden');
+                var elementClientHeight = element[0].clientHeight,
+                    elementScrollHeight = element[0].scrollHeight;
+
+                var rippling = false, rippleStream = scope.rippleStream || false;
+
+                var adjust = function () {
+                    elementClientHeight = element[0].clientHeight;
+                    elementScrollHeight = element[0].scrollHeight;
+                };
+
+                var ripple = function (e) {
+                    rippling = true;
+
+                    var eRipple = angular.element('<span class="' + scope.rippleClass + '"></span>');
+
+                    var rect = element[0].getBoundingClientRect(),
+                        left = e.x - rect.left - (scope.rippleRadius ? scope.rippleRadius / 2 : 25)
+                            - (scope.rippleOffsetX ? scope.rippleOffsetX : 0),
+                        top = e.y - rect.top - (scope.rippleRadius ? scope.rippleRadius / 2 : 25)
+                            - (scope.rippleOffsetY ? scope.rippleOffsetY : 0);
+
+                    if (elementScrollHeight !== elementClientHeight) {
+                        top -= elementScrollHeight;
+                    } else {
+                        top -= scope.rippleRadius ? scope.rippleRadius / 2 : 25;
+                    }
+
+                    eRipple.css('display', 'block');
+                    eRipple.css('position', 'absolute');
+                    eRipple.css('width', scope.rippleRadius ? scope.rippleRadius + 'px' : '50px');
+                    eRipple.css('height', scope.rippleRadius ? scope.rippleRadius + 'px' : '50px');
+                    eRipple.css('margin-left', left + 'px');
+                    eRipple.css('margin-top', top + 'px');
+
+                    element.append(eRipple);
+
+                    eRipple.on('animationend msAnimationEnd webkitAnimationEnd oAnimationEnd', function () {
+                        eRipple.remove();
+                        rippling = false;
+                        scope.rippleCallback && scope.rippleCallback({});
+                    });
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                };
+
+                angular.element($window).bind('resize', function () {
+                    adjust();
+                });
+
+                element.on('mousedown', function (e) {
+                    if (!rippling || scope.rippleStream) {
+                        ripple(e);
+                    }
+                });
+            };
+            return {
+                scope: {
+                },
+                retrict: 'A',
+                link: linkFn
+            };
+        }]);
+    function submitanddisable() {
+        $("#form").submit();
+        this.disable = "disable";
+    }
+</script>
+

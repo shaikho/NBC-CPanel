@@ -1,0 +1,70 @@
+﻿@model FCBCPanel.Models.CurrencyModel
+
+
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Currencies
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.currency_code, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.currency_code, new { @class = "form-control ", @placeholder = "Currency Code" })
+                                            @Html.ValidationMessageFor(model => model.currency_code)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.currency_name, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.currency_name, new { @class = "form-control ", @placeholder = "Currency Name" })
+                                            @Html.ValidationMessageFor(model => model.currency_name)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.currency_summary, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.currency_summary, new { @class = "form-control ", @placeholder = "Currency Summary" })
+                                            @Html.ValidationMessageFor(model => model.currency_summary)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.currency_status, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.currency_status, new List<SelectListItem>
+                                            {
+                                                new SelectListItem {Text = "Active", Value = "1"},
+                                                new SelectListItem {Text = "Deactive", Value = "0"}
+                                            }, new { @class = "form-control select2", @style = "width: 100%" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-xs-57 col-xs-offset-8">
+                                        <input type="submit" onclick="submitanddisable()" value="Add" class="btn btn-md" style="color:white;font-size:small" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+

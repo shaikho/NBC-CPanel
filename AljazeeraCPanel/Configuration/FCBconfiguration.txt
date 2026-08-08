@@ -1,0 +1,2 @@
+https://mob.jsjbank.com:8585
+JSB_OMNI_Ph2/omniServices/cpServices

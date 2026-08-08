@@ -1,0 +1,2 @@
+http://172.29.202.30:8080
+NBE_OMNI_Ph2/omniServices/bankRoutes

@@ -1,0 +1,254 @@
+﻿@model AljazeeraCPanel.Models.Dispute
+@using AljazeeraCPanel.Models;
+
+@{
+
+    List<Dispute> Dispute = Session["Dispute"] as List<Dispute>;
+    //Dispute model = new  Dispute();
+    string branch = "";
+    ViewBag.Title = "Disputes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //string role = Session["user_roleid"] as string;
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Disputes Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Disputes
+                </ol>
+                @if (TempData["disputecreated"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong><br />
+                        @TempData["disputecreated"].ToString()
+                    </div>
+                }
+                @using (Html.BeginForm(new { id = "form" }))
+                {
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="form-group">
+                            <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                            <div class="col-md-3">
+                                <input class="form-control" type="date" name="fromdate" id="fromdate1">
+                            </div>
+                            <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                            <div class="col-md-3">
+                                <input class="form-control" type="date" name="todate" id="todate1">
+                            </div>
+                            <br /><br />
+                            <label class="control-label col-md-2" style="margin-top:0.5%">Branch</label>
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch...", @id = "branchfilter" })
+                            </div>
+
+                            <label class="control-label col-md-2" style="margin-top:0.5%">Service Name</label>
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(model => model.ServiceCode, Model.service_names, new { @class = "form-control ", @placeholder = "Service Name...", @id = "servicefilter" })
+                            </div>
+                            <br /><br />
+                            <label class="control-label col-md-2" style="margin-top:0.5%">Account Type</label>
+                            <div class="col-md-3">
+                                @Html.DropDownListFor(model => model.AccountType, Model.account_type, new { @class = "form-control ", @placeholder = "account_type...", @id = "accountfilter" })
+                            </div>
+
+                         
+                        <div class="col-md-2">
+                            <input class="btn btn-md" id="filter" type="button" style="color:white;font-size:small" value="Filter" />
+                        </div>
+                           
+                            <br /><br />
+                        </div>
+
+                        <div class="box-body">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <table id="example" class="display nowrap" style="font-size:medium">
+                                    <thead>
+                                        <tr>
+
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Tran_DateTime)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Service_Name)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Pay_Customer_Code)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Amount)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.STATUS)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.User_ID)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Branch_Name)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.IBAN)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Account_Type)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Account_No)
+                                            </th>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.Response_Message)
+                                            </th>
+                                            @*<th style="font-size:small">
+                                                    @Html.DisplayNameFor(model => model.NARRIATION)
+                                                </th>*@
+                                            @*@if (role == "2" || role == "3")
+                                                {
+                                                    <th>
+                                                        Action
+                                                    </th>
+                                                }*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Dispute)
+                                        {
+                                            <tr>
+                                                <td style="font-size:small">
+                                                    @item.Tran_DateTime
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Service_Name
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Pay_Customer_Code
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Amount
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.STATUS
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.User_ID
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Branch_Name
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.IBAN
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Account_Type
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Account_No
+                                                </td>
+                                                <td style="font-size:small">
+                                                    @item.Response_Message
+                                                </td>
+                                                @*<td style="font-size:small">
+                                                        @Html.DisplayFor(modelItem => item.NARRIATION)
+                                                    </td>*@
+                                                @*@if (role == "2" || role == "3" || role == "7" || role == "8" )
+                                                    {
+                                                        <td>
+                                                            @Html.ActionLink("Details", "DisputeDetails", new { dispute_id = item.id }, new { @style = "color:black;font-size:14px" })
+                                                        </td>
+
+                                                         <td>
+                                                            @Html.ActionLink("Details", "DisputeDetails", new { dispute_id = item.id }, new { @style = "color:black;font-size:14px" })
+                                                        </td>
+                                                    }*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                            <br />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <br />
+</section>
+
+
+<script>
+
+    $("#filter").on("click", function () {
+        if ($("#fromdate1").val() == "" || $("#todate1").val() == "") {
+            alert("Please select date filter");
+        } else {
+            $('#overlay').show();
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '/CustomerReport/FilteredDispute',
+                dataType: 'json',
+                data: {
+                    fromdate: $("#fromdate1").val(),
+                    todate: $("#todate1").val(),
+                    branch: $("#branchfilter").val(),
+                    service: $("#servicefilter").val(),
+                    accountType: $("#accountfilter").val()
+                   
+                },
+                contentType: 'application/json',
+                success: function (result) {
+                    console.log(result);
+                    $("#example").dataTable().fnClearTable();
+                    $.each(result, function (status, data) {
+                        $.each(data, function (innerstatus, innerdata) {
+                            var data = [];
+                            data.push(innerdata.Tran_DateTime);
+                            data.push(innerdata.Service_Name);
+                            data.push(innerdata.Pay_Customer_Code);
+                            data.push(innerdata.Amount);
+                            data.push(innerdata.STATUS);
+                            data.push(innerdata.User_ID);
+                            data.push(innerdata.Branch_Name);
+                            data.push(innerdata.IBAN);
+                            data.push(innerdata.Account_Type);
+                            data.push(innerdata.Account_No);
+                            data.push(innerdata.Response_Message);
+                           /* data.push('<a href="/CustomerReport/TransactionDetails?TransactionID=' + innerdata.TranID + '?class=btn btn-bloc btn-flat" style="color:black">Details</a>');*/
+                            $("#example").dataTable().fnAddData(data);
+                        });
+                    });
+                    $('#overlay').hide();
+                }
+            });
+        }
+    });
+
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}
+

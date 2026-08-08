@@ -1,0 +1,165 @@
+﻿@model IEnumerable<AljazeeraCPanel.Models.CustomerAuthorization>
+
+@{
+    ViewBag.Title = "CustomerAuth";
+}
+
+<style>
+    td {
+        color: black;
+    }
+</style>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title my-box-header"></h3>
+                </div>
+                <h2>New Customers Check</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    New Customers Authorizations
+                </ol>
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+
+                @if (TempData["fail"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @TempData["fail"].ToString()
+                    </div>
+                }
+
+                @Html.Action("CustomersTable", "CustomerAuthorization")
+
+
+
+                @*<div class="box-body">
+                        <div class="table-responsive col-md-10 col-md-offset-1">
+
+                            <table id="example1" class="display nowrap">
+                                <thead>
+                                    <tr style="font-size:small">
+                                        <th style="font-size:small" class="col-md-6">
+                                            @Html.DisplayNameFor(model => model.Customername)
+                                        </th>
+                                        <th style="font-size:small" class="col-md-6">
+                                            @Html.DisplayNameFor(model => model.Customeraccount)
+                                        </th>
+                                        <th style="font-size:small">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model)
+                                {
+                                    <tr style="font-size:small">
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(modelItem => item.Customername)
+                                        </td>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(modelItem => item.Customeraccount)
+                                        </td>
+                                        <td style="font-size:small;color-rendering:initial">
+                                            @Html.ActionLink("Details", "Details", new { id = item.CustomerID }, new { @style = "color:black;" })
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</section>
+
+@*<script>
+        setInterval(
+            $.getJSON("/CustomerAuthorization/CustomerAuthorizationrefresh", function (dataResponse) {
+                //dataResponse will be whatever we returned from our action
+                //so now we can just populate whatever dom element we want with the value
+                //for example we'll just replace all the html in the dom element with id 'victimCountId'
+                console.log(dataResponse);
+                $('#example1').html(dataResponse);
+            })
+            , 3000);
+    </script>*@
+
+
+
+@*<script>
+        $(document).ready(function () {
+            setInterval(refresh(), 5000);
+        });
+
+        function refresh() {
+            $.ajax(
+                {
+                    type: "POST", //HTTP POST Method
+                    url: "CustomerAuthorizationrefresh", // Controller/View
+                }).success(function (data) {
+                    console.log(data);
+                    populatetable(data);
+                });
+        }
+
+        function populatetable(data) {
+            $("#example1").DataTable().clear();
+            var length = Object.keys(data.length).length;
+            for (var i = 1; i < length + 1; i++) {
+                var customer = data.data[i];
+            }
+
+        }
+    </script>*@
+
+@if (TempData["authorizedsuccess"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Successful',
+            text: '@TempData["authorizedsuccess"].ToString()'
+        })
+    </script>
+}
+
+@if (TempData["authorizedfail"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed',
+            text: '@TempData["authorizedfail"].ToString()'
+        })
+    </script>
+}
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}
+
+@if (TempData["fail"] != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}

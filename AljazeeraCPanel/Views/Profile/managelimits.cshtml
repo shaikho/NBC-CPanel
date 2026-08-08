@@ -1,0 +1,97 @@
+﻿@model  IEnumerable<AljazeeraCPanel.Models.Transferlimit>
+
+
+<header>
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-auto ">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <h2>Customers Profile Informations</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    All Profiles
+                </ol>
+                <div class="box-body col-md-10 col-md-offset-1">
+                    <div class="table-responsive">
+                        <table id="example1" class="display nowrap">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.servicename)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.amount_limit)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.daily_limit)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        @Html.DisplayNameFor(model => model.number_limit)
+                                    </th>
+                                    <th style="font-size:small;text-align:center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)//.OrderBy(item => item.user_id)
+                                {
+                                    <tr>
+                                        <td style="font-size:small;text-align:center" class="col-md-1">
+                                            @Html.DisplayFor(modelItem => item.servicename)
+                                        </td>
+                                        <td style="font-size:small;text-align:center" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.amount_limit)
+                                        </td>
+                                        <td style="font-size:small;text-align:center" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.daily_limit)
+                                        </td>
+                                        <td style="font-size:small;text-align:center" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.number_limit)
+                                        </td>
+                                        <td class="col-md-2">
+                                            <table>
+                                                <tr>
+                                                    <td class="col-md-2"> @Html.ActionLink("update", "edit", new { roleid = item.tran_id }, new { @class = "btn btn-block btn-flat",@style="background-color:#fdc654" })</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var alert = $('.alert');
+    $('.button').click(function () {
+        alert.addClass('open');
+    });
+    $('span.close').on('click', function () {
+        alert.removeClass('open');
+    });
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>
+}

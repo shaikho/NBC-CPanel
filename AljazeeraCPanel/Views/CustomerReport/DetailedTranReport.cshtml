@@ -1,0 +1,199 @@
+﻿@model  AljazeeraCPanel.Models.Custreport
+@using AljazeeraCPanel.Models;
+
+
+@{ ViewBag.Title = "DetailedTranReport";
+
+<h2>DetailedTranReport</h2> Layout = "~/Views/Shared/_Layout.cshtml";
+/*List<CustomerTransferReportViewModel>
+creditapitransactions = Session["creditapitransactions"] as List<CustomerTransferReportViewModel>
+    ; }
+    */
+List<AljazeeraCPanel.Models.TranDetails> creditapitransactions = Session["creditapitransactions"] as List<AljazeeraCPanel.Models.TranDetails>
+        ; }
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <style>
+
+        * {
+            overflow-y: visible
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+</header>
+
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Transactions Details</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Account to card transactions
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="form-group">
+                <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                <div class="col-md-3">
+                    <input class="form-control" type="date" name="fromdate" id="fromdate1">
+                </div>
+                <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                <div class="col-md-4">
+                    <input class="form-control" type="date" name="todate" id="todate1">
+                </div>
+                <br /><br />
+                <label class="control-label col-md-1" style="margin-top:0.5%">Branch</label>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch...", @id = "branchfilter1" })
+                </div>
+                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction status</label>
+                <div class="col-md-4">
+                    @Html.DropDownListFor(model => model.CategoryCode, Model.transactions_statuses, new { @class = "form-control ", @placeholder = "Branch...", @id = "statusfilter1" })
+                </div>
+                <br />
+                <br />
+                <br />
+                <div class="col-md-2 col-md-offset-5">
+                    <input class="btn btn-md" id="filtercard" type="button" style="color:white;font-size:small" value="Filter" />
+                </div>
+                <br /><br />
+            </div>
+            <hr />
+            <table id="example" class="display nowrap" style="font-size:small">
+                <thead>
+                    <tr>
+                        <th style="font-size:small">
+                            Tran Date
+                        </th>
+                        <th style="font-size:small">
+                            From Account
+                        </th>
+                        <th style="font-size:small">
+                            From Branch
+                        </th>
+                        <th style="font-size:small">
+                            To Account
+                        </th>
+                        <th style="font-size:small">
+                            To Branch
+                        </th>
+                        <th style="font-size:small">
+                            Amount
+                        </th>
+                        <th style="font-size:small">
+                            RRN
+                        </th>
+                        <th style="font-size:small">
+                            Status
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tablebody">
+                    @foreach (var transaction in creditapitransactions)
+                    {
+    <tr>
+
+        <td style="font-size:small">
+            @transaction.SysDateTime
+        </td>
+        <td style="font-size:small">
+            @transaction.FromAcc
+        </td>
+        <td style="font-size:small">
+            @transaction.FromBranch
+        </td>
+        <td style="font-size:small">
+            @transaction.ToAcc
+        </td>
+        <td style="font-size:small">
+            @transaction.ToBranch
+        </td>
+        <td style="font-size:small">
+            @transaction.Amount
+        </td>
+        <td style="font-size:small">
+            @transaction.RRN
+        </td>
+        <td style="font-size:small">
+            @transaction.Status
+        </td>
+    </tr>
+}
+                </tbody>
+            </table>
+        </div>
+                        <br />
+                                        <br />}
+                </div>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("savecreditapireport", "CustomerReport", new { id = "form" }))
+    {
+<div class="form-group">
+    <div class="col-md-2 col-md-offset-5">
+        <input type="submit" onclick="submitanddisable()" value="Print Report" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+    </div>
+</div>}
+    <br />
+    <br />
+    <br />
+    <br />
+
+</section>
+
+<script>
+    $("#filtercard").on("click", function () {
+        if ($("#fromdate1").val() == "" || $("#todate1").val() == "") {
+            alert("Please select date filter");
+        } else {
+            $('#overlay').show();
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '/CustomerReport/FilterCustTranReport',
+                dataType: 'json',
+                data: {
+                    branch_code: $("#branchfilter1").val(),
+                    status: $("#statusfilter1").val(),
+                    fromdate: $("#fromdate1").val(),
+                    todate: $("#todate1").val()
+
+                },
+                contentType: 'application/json',
+                success: function (result) {
+                    $("#example").dataTable().fnClearTable();
+                    $.each(result, function (status, data) {
+                        $.each(data, function (innerstatus, innerdata) {
+                            var data = [];
+                            data.push(innerdata.SysDateTime);
+                            data.push(innerdata.UserID);
+                            let tranAmount = Number.parseFloat(innerdata.TranReqAmount).toLocaleString();
+                            data.push(innerdata.FromAcc);
+                            data.push(innerdata.FromBranch);
+                            data.push(innerdata.ToAcc);
+                            data.push(innerdata.ToBranch);
+                            data.push(innerdata.Amount);
+                            data.push(innerdata.RRN);
+                            data.push(innerdata.Status);
+                            $("#example").dataTable().fnAddData(data);
+                        });
+                    });
+                    $('#overlay').hide();
+                }
+            });
+        }
+    });
+</script>
+

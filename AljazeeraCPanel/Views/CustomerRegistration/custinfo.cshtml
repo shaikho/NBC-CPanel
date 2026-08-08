@@ -1,0 +1,167 @@
+﻿@model AljazeeraCPanel.Models.CustomerRegBankinfo2
+@using AljazeeraCPanel.Models;   
+
+@{
+    ViewBag.Title = "Customer Infomation";
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        * {
+            overflow-y: visible
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+</header>
+
+<section class="content">
+    <div class="box-header with-border">
+        <h3 class="box-title my-box-header"></h3>
+    </div>
+    <h2>New Customer Registration</h2><br />
+    <ol class="breadcrumb" style="font-size:medium">
+        Customer Regstration Bank Information
+    </ol>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <div class="box-tools pull-right">
+                    </div>
+                </div>
+                <div class="box-body">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.ValidationSummary(true)
+                        @Html.HiddenFor(model => model.cat)
+                        <label class="control-label col-md-4" style="margin-top:0.5%">Customer Details</label>
+                        <table id="example" class="table display table-bordered table-hover border-top">
+                            @if (Model.CustomerNameArabic != "")
+                            {
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.CustomerNameArabic)
+                                    </th>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(model => model.CustomerNameArabic)
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.CustomerNameEN != "")
+                            {
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.CustomerNameEN)
+                                    </th>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(model => model.CustomerNameEN)
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.CustomerAddress != "")
+                            {
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.CustomerAddress)
+                                    </th>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(model => model.CustomerAddress)
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                        <br />
+                        foreach (AccountDetails account in Model.accountDetails)
+                        {
+                            <label class="control-label col-md-4" style="margin-top:0.5%">Account number : @account.Account_No</label>
+                            <table id="example2" class="table display table-bordered table-hover border-top">
+                                <tr>
+                                    <th style="font-size:small">
+                                        Account Type
+                                    </th>
+                                    <td style="font-size:small">
+                                        @account.Account_Type_Code
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-size:small">
+                                        IBAN
+                                    </th>
+                                    <td style="font-size:small">
+                                        @account.IBAN
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-size:small">
+                                        Branch
+                                    </th>
+                                    <td style="font-size:small">
+                                        @account.Branch_Code
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-size:small">
+                                        Currency
+                                    </th>
+                                    <td style="font-size:small">
+                                        @account.Currency_Code
+                                    </td>
+                                </tr>
+                            </table>
+                            <br />
+                        }
+                        @*<div>
+                            <label class="control-label col-md-4" style="margin-top:0.5%">Customer profile</label>
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.selectedprofile, Model.Profiles, new { @class = "form-control " })
+                            </div>
+                        </div>*@
+                        <br />
+                   
+                        <div>
+                            <label class="control-label col-md-4" style="margin-top:0.5%">Phone number</label>
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.selectedphonenumber, Model.AvailablePhoneNumbers, new { @class = "form-control " })
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <br />
+                        <div>
+                            <label class="control-label col-md-4" style="margin-top:0.5%">Primary account</label>
+                            <div class="col-md-4">
+                                @Html.DropDownListFor(model => model.selectedaccount, Model.AvailableCustomerAccount, new { @class = "form-control " })
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <br />
+                        <div class="form-group">
+                            <div class="col-xs-2 col-xs-offset-4">
+                                <input type="submit" value="Submit" class="btn btn-block btn-flat" />
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(document).ready(function () {
+        var table = $('display').DataTable();
+        //var table2 = $('#example2').DataTable();
+    });
+</script>

@@ -1,0 +1,173 @@
+﻿@model AljazeeraCPanel.Models.Limit
+@using System.Web.Mvc.Html;
+@using AljazeeraCPanel.Models
+
+
+<header>
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-auto ">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <h2>   Customers Profile Informations</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Manage Limit For Bank Services
+                </ol>
+
+
+                <div class="box-body col-md-10 col-md-offset-1">
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.service_name, new { @class = "control-label col-md-5" })
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.service_name, new { @class = "form-control ", @placeholder = "# Service Name", @value = Model.service_name, @readonly = true })
+                                            @Html.ValidationMessageFor(model => model.service_name)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Transaction_per_day, new { @class = "control-label col-md-5" })
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.Transaction_per_day, new { @class = "form-control ", @placeholder = "# Max number of transactions", @type = "number", @value = Model.Transaction_per_day })
+                                            @Html.ValidationMessageFor(model => model.Transaction_per_day)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Transaction_amount, new { @class = "control-label col-md-5" })
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.Transaction_amount, new { @class = "form-control ", @placeholder = "# Maximum transfer limit", @type = "number", @value = Model.Transaction_amount })
+                                            @Html.ValidationMessageFor(model => model.Transaction_amount)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Transactions_accumulation, new { @class = "control-label col-md-5" })
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.Transactions_accumulation, new { @class = "form-control ", @placeholder = "# Daily accumulative transfer limit", @type = "number", Model.Transactions_accumulation })
+                                            @Html.ValidationMessageFor(model => model.Transactions_accumulation)
+                                        </div>
+                                    </div>
+
+                                    @*<div class="form-group">
+                                            @Html.LabelFor(model => model.Fees, new { @class = "control-label col-md-5" })
+                                            <div class="col-md-4">
+                                                @Html.TextBoxFor(model => model.Fees, new { @class = "form-control ", @placeholder = "# Fees", @type = "number", Model.Fees })
+                                                @Html.ValidationMessageFor(model => model.Fees)
+                                            </div>
+
+                                            @Html.RadioButtonFor(model => model.flag, "1", new { @class = "radio-inline radio", @id = "mustbechecked" })  Numeric
+
+                                            @Html.RadioButtonFor(model => model.flag, "0", new { @class = "radio-inline radio", @id = "mustbechecked" })  Percentage
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.Tax, new { @class = "control-label col-md-5" })
+                                            <div class="col-md-4">
+                                                @Html.TextBoxFor(model => model.Tax, new { @class = "form-control ", @placeholder = "# Tax", @type = "number", Model.Tax })
+                                                @Html.ValidationMessageFor(model => model.Tax)
+                                            </div>
+                                        </div>*@
+
+                                    <div class="form-group">
+                                        <div class="col-md-4 col-md-offset-6">
+                                            <input type="submit" value="UPDATE" formaction="@Url.Action("ManageLimits","CPanelProfileManagement")" class="btn btn-lg" onclick="submitanddisable()" style="background:#24295E;color:white;font-size:small" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @*<div class="box-body col-md-10 col-md-offset-1">
+                        <div class="table-responsive">
+                            <table id="example1" class="display nowrap">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small;text-align:center">
+                                            @Html.DisplayNameFor(model => model.service_name)
+                                        </th>
+                                        <th style="font-size:small;text-align:center">
+                                            @Html.DisplayNameFor(model => model.amount_limit)
+                                        </th>
+                                        <th style="font-size:small;text-align:center">
+                                            @Html.DisplayNameFor(model => model.daily_limit)
+                                        </th>
+                                        <th style="font-size:small;text-align:center">
+                                            @Html.DisplayNameFor(model => model.number_limit)
+                                        </th>
+                                        <th style="font-size:small;text-align:center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)//.OrderBy(item => item.user_id)
+                                    {
+                                        <tr>
+                                            <td style="font-size:small;text-align:center" class="col-md-1">
+                                                @Html.DisplayFor(modelItem => item.servicename)
+                                            </td>
+                                            <td style="font-size:small;text-align:center" class="col-md-3">
+                                                @Html.DisplayFor(modelItem => item.amount_limit)
+                                            </td>
+                                            <td style="font-size:small;text-align:center" class="col-md-3">
+                                                @Html.DisplayFor(modelItem => item.daily_limit)
+                                            </td>
+                                            <td style="font-size:small;text-align:center" class="col-md-3">
+                                                @Html.DisplayFor(modelItem => item.number_limit)
+                                            </td>
+                                            <td class="col-md-2">
+                                                <table>
+                                                    <tr>
+                                                        <td class="col-md-2"> @Html.ActionLink("update", "edit", new { roleid = item.tran_id }, new { @class = "btn btn-block btn-flat", @style = "background-color:#fdc654" })</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    var alert = $('.alert');
+    $('.button').click(function () {
+        alert.addClass('open');
+    });
+    $('span.close').on('click', function () {
+        alert.removeClass('open');
+    });
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>
+}

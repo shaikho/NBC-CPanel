@@ -1,0 +1,182 @@
+﻿@model AljazeeraCPanel.Models.CustomerRegBankinfo
+@using AljazeeraCPanel.Models;
+@{
+    ViewBag.Title = "New Account";
+    Model.AccountNumber = "";
+}
+
+<section class="content">
+    <a href="~/Views/AddAccount/newCustomerAccount.cshtml">~/Views/AddAccount/newCustomerAccount.cshtml</a>
+    <div class="row">
+        <section class="">
+            <div class="row col-md-12 connectedSortable">
+                <h2>Customers Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    New Customer Account
+                </ol>
+            </div>
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+
+                            <div class="alert alert-success" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+
+                                <strong>
+                                    <span class="info-box-text">Customer existing account &nbsp;: </span>
+                                </strong>
+                                <br />
+                                <br />
+                                <strong>
+                                    <span class="info-box-text">Name</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.name</span>
+                                <br />
+                                @*<strong>
+                                        <span class="info-box-text">Customer Branch</span> :
+                                    </strong>
+                                    <span class="info-box-text">@Session["sourcebranch"].ToString()</span>
+                                    <br />
+                                    <strong>
+                                        <span class="info-box-text">Customer Account Type</span> :
+                                    </strong>
+                                    <span class="info-box-text">@Session["sourceaccounttype"].ToString()</span>
+                                    <br />*@
+                            </div>
+                            @*if (ViewBag.msg != null)
+                                {*@
+
+                            <div class="alert alert-warning" role="alert">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"></button>
+                                <strong>
+                                    <span class="info-box-text">Account to be added &nbsp;: </span>
+                                </strong>
+                                <br />
+                                <br />
+                                <strong>
+                                    <span class="info-box-text">Customer Name</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.custname</span>
+                                <br />
+                                <strong>
+                                    <span class="info-box-text">Customer Branch</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.custbranch</span>
+                                <br />
+                                <strong>
+                                    <span class="info-box-text">Customer Account Type</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.custaccounttype</span>
+                                <br />
+                            </div>
+                            @*}*@
+
+
+                            @if (ViewBag.custbranch != null)
+                            {
+                                <div class="info-box-content">
+                                    <strong>
+                                        <span class="info-box-text">Branch</span> :
+                                    </strong>
+                                    <span class="info-box-text">@ViewBag.custbranch</span>
+                                </div>
+                            }
+                            @if (ViewBag.custaccounttype != null)
+                            {
+                                <div class="info-box-content">
+                                    <strong>
+                                        <span class="info-box-text">Account type</span> :
+                                    </strong>
+                                    <span class="info-box-text">@ViewBag.custaccounttype</span>
+                                </div>
+                            }
+                            <br />
+                            <div class="info-box-content">
+                                <strong>
+                                    <span class="info-box-text">UserName</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.username</span>
+                            </div>
+                            @if (ViewBag.msg != null)
+                            {
+                                <br />
+                                <div class="info-box-content">
+                                    <strong>
+                                        <span class="info-box-text">Account Customer Name</span>
+                                    </strong>
+                                    <span class="info-box-text">@ViewBag.msg</span>
+                                </div>
+                            }
+                            @using (Html.BeginForm("newCustomerAccount", "AddAccount", FormMethod.Post, new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    <br />
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.AccountNumber, new { @class = "col-md-2" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "Account #...", @maxlength = "13", @id = "accountnumber" })
+                                            @Html.ValidationMessageFor(model => model.AccountNumber)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-3 col-xs-offset-5">
+                                            <input type="submit" value="Check" name="Command" d="Check" class="btn btn-block btn-flat" style="background-color:#EB9815" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @if (ViewBag.msg != null)
+                                        {
+                                            <div class="col-xs-3 col-xs-offset-5" style="margin-left:42.5%">
+                                                <input type="submit" value="Add" name="Command" d="Add" class="btn btn-block btn-flat" style="background-color:#EB9815" />
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts{
+
+    <script type="text/javascript">
+        var getCustName = function () {
+            var branch = $('#Branch').val();
+            var acttype = $('#acttype').val();
+            var curr = $('#curr').val();
+            var act = $('#act').val();
+            var accountnumber = '13' + branch + acttype + curr + act;
+            alert(accountnumber);
+            $.ajax({
+                type: "POST",
+                url: "/AddAccount/checknewCustomerAccount",
+                data: { accountnumber: accountnumber },
+                success: function (response) {
+                    alert('hello');
+                    alert(response);
+                }
+            });
+        }
+    </script>
+}
+
+@if (ViewBag.custname != null)
+{
+    if (ViewBag.name != ViewBag.custname)
+    {
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Be ware !',
+                text: 'Account names are not matched !'
+            })
+        </script>
+    }
+}

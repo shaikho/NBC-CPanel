@@ -1,0 +1,13 @@
+https://mob.jsjbank.com:8383
+JSB_OMNI_Ph2/omniServices/sharedRoutes
+
+
+
+http://172.29.202.30:8080
+NBE_OMNI_Ph2/omniServices/cpServices
+http://172.29.202.30:8080
+NBE_OMNI_Ph2/omniServices/bankRoutes
+http://172.29.202.30:8080
+NBE_OMNI_Ph2/omniServices/corpRoutes
+http://172.29.202.30:8080
+NBE_OMNI_Ph2/omniServices/sharedRoutes
