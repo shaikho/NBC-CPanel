@@ -73,13 +73,35 @@ namespace AljazeeraCPanel.Filters
             "1"                // Admin
         };
 
+        /// <summary>
+        /// Controllers reachable WITHOUT authentication (the login page, the access-denied
+        /// page, the error page). These must be checked before the auth redirect below,
+        /// otherwise an unauthenticated request to Login would be redirected to Login in
+        /// an infinite loop (ERR_TOO_MANY_REDIRECTS).
+        /// </summary>
+        private static readonly HashSet<string> PublicControllers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Login",
+            "Unauthorised",
+            "Error"
+        };
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var controllerName = (string)filterContext.RouteData.Values["controller"];
             var actionName = (string)filterContext.RouteData.Values["action"];
             var session = filterContext.HttpContext != null ? filterContext.HttpContext.Session : null;
 
-            // 1) Must be authenticated. (AuthorizeSession normally runs first; this is defense in depth.)
+            // 0) Public controllers are reachable without authentication — must come first
+            //    so the login page itself is never redirected back to the login page.
+            if (controllerName != null && PublicControllers.Contains(controllerName))
+            {
+                base.OnActionExecuting(filterContext);
+                return;
+            }
+
+            // 1) Everything else must be authenticated. (AuthorizeSession normally runs
+            //    first; this is defense in depth.)
             if (!IsAuthenticated(session))
             {
                 filterContext.Result = new RedirectToRouteResult(

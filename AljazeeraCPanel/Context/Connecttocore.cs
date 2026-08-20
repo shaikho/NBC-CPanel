@@ -48,7 +48,7 @@ namespace AljazeeraCPanel.Context
 
 
                 //using (StreamReader sr = new StreamReader("D:\\Projects\\AZ\\NBE\\NBE\\AljazeeraCPanel\\Configuration\\NBEconfiguration.txt"))
-                 using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfiguration.txt"))
+                using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfiguration.txt"))
                 {
                     string line;
                     while ((line = sr.ReadLine()) != null)
