@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using Microsoft.Ajax.Utilities;
 using Org.BouncyCastle.Utilities;
@@ -11,6 +12,7 @@ using SIBCPanel.Context;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class CustomerTransferReportController : Controller
     {
         DataSource ds = new DataSource();

@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using AljazeeraCPanel.Repository;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class AccountController : Controller
     {
         public virtual PartialViewResult Menu()

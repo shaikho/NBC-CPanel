@@ -16,7 +16,7 @@
     <AssemblyName>AljazeeraCPanel</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <Use64BitIISExpress>
     </Use64BitIISExpress>
     <IISExpressSSLPort>44356</IISExpressSSLPort>
@@ -180,6 +180,8 @@
     <Compile Include="Controllers\UpdateCustomerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UsersMangementController.cs" />
+    <Compile Include="Filters\AuthorizeRoleAttribute.cs" />
+    <Compile Include="Filters\AuthorizeSessionAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -230,6 +232,7 @@
     <Compile Include="Models\UsersMangementViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MenuData.cs" />
+    <Compile Include="Validators\PasswordPolicyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\api.txt" />
@@ -523,7 +526,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>18713</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44356/</IISUrl>
+          <IISUrl>http://localhost:9000</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

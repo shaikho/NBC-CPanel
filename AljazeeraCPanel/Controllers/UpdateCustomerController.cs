@@ -1,4 +1,5 @@
 ﻿using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -11,6 +12,7 @@ namespace Cpanel.Controllers
 {
 
 
+    [AuthorizeSession]
     public class UpdateCustomerController : Controller
     {
 

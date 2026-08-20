@@ -1,6 +1,7 @@
 ﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -13,6 +14,7 @@ using System.Web.Mvc;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class ActionsLogController : Controller
     {
         DataSource data = new DataSource();

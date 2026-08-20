@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Filters;
 using System.Data;
 using AljazeeraCPanel.Context;
 using iTextSharp.text;
@@ -14,6 +15,7 @@ using SIBCPanel.Context;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class ServiceController : Controller
     {
         DataSource ds = new DataSource();

@@ -1,6 +1,7 @@
 ﻿
 using AljazeeraCPanel;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using Newtonsoft.Json.Linq;
 using SIBCPanel.Context;
@@ -13,6 +14,7 @@ using System.Web.Mvc;
 
 namespace Cpanel.Controllers
 {
+    [AuthorizeSession]
     public class ActiveAccountController : Controller
     {
         DataSource ds = new DataSource();
@@ -21,19 +23,6 @@ namespace Cpanel.Controllers
         // GET: /ActiveAccount/
         public ActionResult ActiveCustomer()
         {
-            if (Session["user_name"] == null)
-            {
-                return RedirectToAction("Login", "Login");
-            }
-            if (Session["user_branch"] == null)
-            {
-                return RedirectToAction("Login", "Login");
-            }
-            if ((Session["cpanelLogin"] == null) || !Session["cpanelLogin"].ToString().Equals("true"))
-            {
-                return RedirectToAction("Login", "Login");
-            }
-
             if (Session["acresult"] != null)
             {
                 ViewBag.SuccessMessage = Session["acresult"].ToString();

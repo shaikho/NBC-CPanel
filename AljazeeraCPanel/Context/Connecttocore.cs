@@ -47,12 +47,8 @@ namespace AljazeeraCPanel.Context
             {
 
 
-               using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\last nbe\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfiguration.txt"))
-        
-                // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfiguration.txt"))
-              // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfiguration.txt"))
-
-
+                using (StreamReader sr = new StreamReader("D:\\Projects\\AZ\\NBE\\NBE\\AljazeeraCPanel\\Configuration\\NBEconfiguration.txt"))
+                // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfiguration.txt"))
                 {
                     string line;
                     while ((line = sr.ReadLine()) != null)
@@ -77,10 +73,10 @@ namespace AljazeeraCPanel.Context
             try
             {
 
-              using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\last nbe\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationshare.txt"))
-               
+                using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\last nbe\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationshare.txt"))
+
                 //using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfigurationshare.txt"))
-            // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationshare.txt"))
+                // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationshare.txt"))
                 {
 
 
@@ -104,10 +100,10 @@ namespace AljazeeraCPanel.Context
             try
             {
 
-              using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\last nbe\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationbank.txt"))
+                using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\last nbe\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationbank.txt"))
 
-               //using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfigurationshare.txt"))
-             // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationbank.txt"))
+                //using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfigurationshare.txt"))
+                // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationbank.txt"))
                 {
 
 
@@ -131,13 +127,13 @@ namespace AljazeeraCPanel.Context
         {
             try
             {
- 
-            // using (StreamReader sr = new StreamReader("C:\\Users\\itsadmin\\Desktop\\NBE2\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationcorp.txt"))
-         
-             // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfigurationcorp.txt"))
-             using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationcorp.txt"))
 
-            
+                // using (StreamReader sr = new StreamReader("C:\\Users\\itsadmin\\Desktop\\NBE2\\NBE2\\AljazeeraCPanel\\Configuration\\NBEconfigurationcorp.txt"))
+
+                // using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanelTest\\Configuration\\JSBconfigurationcorp.txt"))
+                using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\CPanel\\Configuration\\NBEconfigurationcorp.txt"))
+
+
                 {
 
 
@@ -157,7 +153,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public string sendotp2( string sms, string phonenumber)
+        public string sendotp2(string sms, string phonenumber)
         {
             getconfigshare();
             // String UserID, String PhoneNo, String OTP
@@ -167,7 +163,7 @@ namespace AljazeeraCPanel.Context
             dynamicJson.Authentication = "Card";
             dynamicJson.Channel = "InternetBanking";
             //dynamicJson.UserID = userid;//"130042010593883".ToString();
-           // dynamicJson.OTP = sms;//"10";
+            // dynamicJson.OTP = sms;//"10";
             dynamicJson.SMS = sms;  //"Your Account temporery password is : ";//"10";
             dynamicJson.Phone = phonenumber;//"10";
             dynamicJson.flag = "Internetbanking";//"10";
@@ -239,7 +235,7 @@ namespace AljazeeraCPanel.Context
                 return responJsonText;
             }
         }
-        public static string getInvoiceInfo(string invoice, string type, string userid, JObject Account_Info , string accessToken)
+        public static string getInvoiceInfo(string invoice, string type, string userid, JObject Account_Info, string accessToken)
         {
 
             getconfigbank();
@@ -446,11 +442,11 @@ namespace AljazeeraCPanel.Context
 
 
 
-     
 
-//public class OTPService
-//    {
-        public async Task SendOTPAsync( string phoneNo, string otp)
+
+        //public class OTPService
+        //    {
+        public async Task SendOTPAsync(string phoneNo, string otp)
         {
             string responseData = null;
             string output = null;
@@ -490,15 +486,15 @@ namespace AljazeeraCPanel.Context
                     string code = ((int)response.StatusCode).ToString();
 
                     if (code != "200")
-                        Console.WriteLine( phoneNo, otp, "F");
+                        Console.WriteLine(phoneNo, otp, "F");
                     else
-                        Console.WriteLine( phoneNo, otp, "S");
+                        Console.WriteLine(phoneNo, otp, "S");
                 }
             }
             catch (Exception e)
             {
                 Console.Error.WriteLine("Exception: " + e.Message);
-                Console.WriteLine( phoneNo, otp, "UK"); // Unknown
+                Console.WriteLine(phoneNo, otp, "UK"); // Unknown
             }
         }
 
@@ -565,7 +561,7 @@ namespace AljazeeraCPanel.Context
             dynamicJson.lang = "1";
             dynamicJson.uuid = Guid.NewGuid();
             //JArray ob = new JArray();
-            
+
 
             string json = "";
             json = JsonConvert.SerializeObject(dynamicJson);
@@ -645,7 +641,7 @@ namespace AljazeeraCPanel.Context
                 return responJsonText;
             }
         }
-        public static string cpLogin(string username,string password)
+        public static string cpLogin(string username, string password)
         {
             getconfig();
             Uri requestUri = new Uri(BASE_URL + "/cpLogin");
@@ -685,7 +681,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public static string getCustomerInfo(string account_number,string accessToken)
+        public static string getCustomerInfo(string account_number, string accessToken)
         {
             getconfig();
             Uri requestUri = new Uri(BASE_URL + "/cpGetCustInfoCore");
@@ -696,7 +692,7 @@ namespace AljazeeraCPanel.Context
             List<JObject> Account_info = new List<JObject>();
             JObject account = new JObject();
             account.Add("Account_No", account_number);
-        
+
             Account_info.Add(account);
 
 
@@ -734,7 +730,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public static string getCustomerInfoByRim( string RIM, string accessToken)
+        public static string getCustomerInfoByRim(string RIM, string accessToken)
         {
 
 
@@ -794,7 +790,7 @@ namespace AljazeeraCPanel.Context
         }
 
 
-        public static string getCustomerInfoByRimforCorp(string RIM,string Cat, String[] channel, string accessToken)
+        public static string getCustomerInfoByRimforCorp(string RIM, string Cat, String[] channel, string accessToken)
         {
             getconfigcorp();
             //BASE_URL = "http://172.23.2.72:8080/JSB_OMNI_Ph2/omniServices/corpRoutes";
@@ -906,9 +902,9 @@ namespace AljazeeraCPanel.Context
             accessToken = splittedtoken[1];
 
             dynamic dynamicJson = new ExpandoObject();
-            
+
             ////dynamicJson.Account_Info = Account_info;
-            dynamicJson.NID= nid;
+            dynamicJson.NID = nid;
             //dynamicJson.Tran_DateTime = datetimenow;
             //dynamicJson.Lang = 1;
 
@@ -1038,7 +1034,7 @@ namespace AljazeeraCPanel.Context
         public static string restCustomerPasswordDevice(string userid, string accessToken)
         {
             getconfig();
-            
+
             Uri requestUri = new Uri(BASE_URL + "/requestOTP");
             string[] splittedtoken = accessToken.Split(' ');
             accessToken = splittedtoken[1]; ;
@@ -1110,7 +1106,7 @@ namespace AljazeeraCPanel.Context
             getconfig();
             Uri requestUri = new Uri(BASE_URL + "/getUnauthCust");
             string[] splittedtoken = accessToken.Split(' ');
-            accessToken = splittedtoken[1]; 
+            accessToken = splittedtoken[1];
 
             var responJsonText = "";
 
@@ -1140,7 +1136,7 @@ namespace AljazeeraCPanel.Context
             string[] splittedtoken = accessToken.Split(' ');
             accessToken = splittedtoken[1];
             //accessToken = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiIwMDAxNjc3NTIiLCJpYXQiOjE2NzI3NjU0MDQsImlzcyI6IjEiLCJVc2VySUQiOiIwMDAxNjc3NTIiLCJEZXZpY2VLZXkiOiIwMmJmZjU4OWY5MzI0ODEwIiwiZXhwIjoxNjcyNzc1NDA0fQ.n01g7iJBW3jCcGLY15DEgFxJrbT0Z-xP0an93gICa1k";
-             var responJsonText = "";
+            var responJsonText = "";
 
             using (var objClient = new HttpClient())
             {
@@ -1161,7 +1157,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public static string getDispute(string accessToken , string fromdate , string todate, string branch,string service , string accountType )
+        public static string getDispute(string accessToken, string fromdate, string todate, string branch, string service, string accountType)
         {
             getconfig();
             Uri requestUri = new Uri(BASE_URL + "/getDisputeTrans");
@@ -1289,7 +1285,7 @@ namespace AljazeeraCPanel.Context
         public static string getBranchs(string accessToken)
         {
             getconfigshare();
-           //string BASE_URL = "https://mob.jsjbank.com:8383/JSB_OMNI_Ph2/omniServices/sharedRoutes";
+            //string BASE_URL = "https://mob.jsjbank.com:8383/JSB_OMNI_Ph2/omniServices/sharedRoutes";
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             Uri requestUri = new Uri(BASE_URLshare + "/getBranches");
@@ -1485,7 +1481,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public static string getcustomerinfousingphonenumber(string phonenumber,string rim ,string accountnumber,string username ,string accessToken)
+        public static string getcustomerinfousingphonenumber(string phonenumber, string rim, string accountnumber, string username, string accessToken)
         {
             getconfig();
             Uri requestUri = new Uri(BASE_URL + "/cpGetRegCustInfo"); //  // cpGetRegCustInfo  //cpGetCustInfoCore
@@ -1561,7 +1557,7 @@ namespace AljazeeraCPanel.Context
             }
         }
 
-        public static string registerCustomer(string email,string phonenumber,string address,string customernamear, string customernameen, string rim,string account_no,string cat , String [] channel,string accessToken)
+        public static string registerCustomer(string email, string phonenumber, string address, string customernamear, string customernameen, string rim, string account_no, string cat, String[] channel, string accessToken)
         {
             getconfig();
 

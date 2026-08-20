@@ -1,4 +1,5 @@
 ﻿using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Filters;
 using SIBCPanel.Context;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Web.Mvc;
 
 namespace SIBCPanel.Controllers
 {
+    [AuthorizeSession]
     public class ProfileController : Controller
     {
         //

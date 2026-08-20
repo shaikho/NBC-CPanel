@@ -1,4 +1,5 @@
 ﻿using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using Newtonsoft.Json.Linq;
 using SIBCPanel.Context;
@@ -12,6 +13,7 @@ using System.Web.Services.Description;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class CustomerAuthorizationController : Controller
     {
         DataSource ds = new DataSource();

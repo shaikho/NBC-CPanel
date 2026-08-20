@@ -1,6 +1,7 @@
 ﻿using cpanel.Models;
 using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -12,6 +13,7 @@ using System.Web.Script.Serialization;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class MonitoringController : Controller
     {
         DataSource ds = new DataSource();

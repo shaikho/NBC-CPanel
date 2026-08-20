@@ -2,6 +2,7 @@
 using iTextSharp.text.pdf;
 using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -15,6 +16,7 @@ using System.Web.Mvc;
 
 namespace Cpanel.Controllers
 {
+    [AuthorizeSession]
     public class resetCustomerController : Controller
     {
         DataSource ds = new DataSource();

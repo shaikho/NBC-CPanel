@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using AljazeeraCPanel.Models;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using System.Text;
@@ -14,6 +15,7 @@ using System.Text.RegularExpressions;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class ChqRequestController : Controller
     {
         DataSource ds = new DataSource();

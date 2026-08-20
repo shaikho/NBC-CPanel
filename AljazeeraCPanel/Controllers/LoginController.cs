@@ -1,33 +1,41 @@
-﻿using AljazeeraCPanel.Models;
-using AljazeeraCPanel.Context;
+﻿using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Validators;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SIBCPanel.Context;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using SIBCPanel.Context;
-using Newtonsoft.Json.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
-using System.Dynamic;
-using Newtonsoft.Json;
-using System.Net;
+using System.Web.Mvc;
+using System.Web.SessionState;
 
 namespace AljazeeraCPanel.Controllers
 {
     public class LoginController : Controller
     {
         DataSource ds = new DataSource();
-        //
-        // GET: /Login/
 
+        private void RegenerateSessionId()
+        {
+            SessionIDManager manager = new SessionIDManager();
+            string newSessionId = manager.CreateSessionID(System.Web.HttpContext.Current);
+            bool redirected;
+            bool isAdded;
+            manager.SaveSessionID(System.Web.HttpContext.Current, newSessionId, out redirected, out isAdded);
+        }
 
         public ActionResult Login()
         {
+            Session.Clear();
+            Session.Abandon();
             Session["cpanelLogin"] = "false";
             return View();
         }
-
 
         [HttpPost] 
         public ActionResult Login(Loginmodel model)
@@ -36,6 +44,14 @@ namespace AljazeeraCPanel.Controllers
             Loginmodelresult result = new Loginmodelresult();
             try
             {
+                // WAPT02-02: Check password policy BEFORE database authentication
+                // This prevents weak credentials from being used even if they exist in the system
+                var (isPolicyValid, policyError) = PasswordPolicyValidator.ValidatePassword(model.Password);
+                if (!isPolicyValid)
+                {
+                    ModelState.AddModelError("", "Invalid password: " + policyError);
+                    return View(model);
+                }
 
                 string ipAddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
                 string logincallresponse = "";
@@ -48,94 +64,84 @@ namespace AljazeeraCPanel.Controllers
 
                 // We do not want to use any existing identity information
 
-                Connecttocore.getconfig();
-                Uri requestUri = new Uri(Connecttocore.BASE_URL + "/cpLogin");
-                string datetimenow = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
+                //Connecttocore.getconfig();
+                //Uri requestUri = new Uri(Connecttocore.BASE_URL + "/cpLogin");
+                //string datetimenow = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
 
-                dynamic dynamicJson = new ExpandoObject();
+                //dynamic dynamicJson = new ExpandoObject();
 
-                dynamicJson.User_ID = model.Username;
-                dynamicJson.Password = model.Password;
-                dynamicJson.ChannelID = 3;
-                dynamicJson.Device_Key = "02bff589f9324810";
+                //dynamicJson.User_ID = model.Username;
+                //dynamicJson.Password = model.Password;
+                //dynamicJson.ChannelID = 3;
+                //dynamicJson.Device_Key = "02bff589f9324810";
 
-                string json = "";
-                json = JsonConvert.SerializeObject(dynamicJson);
-                var responJsonText = "";
-                JObject JResp = new JObject();
-                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                //string json = "";
+                //json = JsonConvert.SerializeObject(dynamicJson);
+                //var responJsonText = "";
+                //JObject JResp = new JObject();
+                //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
-                using (var objClient = new HttpClient())
-                {
-                    try
-                    {
-                        
-
-                        HttpResponseMessage respon = objClient
-                            .PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+                //using (var objClient = new HttpClient())
+                //{
+                //    try
+                //    {
 
 
-                        if (respon.IsSuccessStatusCode)
-                        {
-                            logincallresponse = respon.Content.ReadAsStringAsync().Result;
-                            accesstoken = respon.Headers.GetValues("Authorization").FirstOrDefault();
-                        }
+                //        HttpResponseMessage respon = objClient
+                //            .PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
 
 
-                    }
-
-                    catch (Exception e)
-                    { 
-
-                        logincallresponse = "Error";
-                    }
+                //        if (respon.IsSuccessStatusCode)
+                //        {
+                //            logincallresponse = respon.Content.ReadAsStringAsync().Result;
+                //            accesstoken = respon.Headers.GetValues("Authorization").FirstOrDefault();
+                //        }
 
 
-                }
+                //    }
+
+                //    catch (Exception e)
+                //    { 
+
+                //        logincallresponse = "Error";
+                //    }
 
 
-
-
-                JObject response = new JObject();
-                response = JObject.Parse(logincallresponse);
-
-
-                if (int.Parse(response.GetValue("Response_Code").ToString()) == 0)
-                {
-
-
-                    Session["cpanelLogin"] = "true";
-                    Session["accesstoken"] = accesstoken;
-                    Session["username"] = response.GetValue("User_Name").ToString();
-                    Session["user_log"] = model.Username;
-                    Session["UserId"] = "3";
-                    Session["user_name"] = response.GetValue("User_Name").ToString();
-                    Session["user_branch"] = response.GetValue("Branch_Code").ToString();
-                    Session["user_roleid"] = response.GetValue("Role").ToString(); //"2";
+                //}
 
 
 
 
+                //JObject response = new JObject();
+                //response = JObject.Parse(logincallresponse);
 
 
-                    ////
-                    ///
+                //if (int.Parse(response.GetValue("Response_Code").ToString()) == 0)
+                //{
+
+
                     result = ds.checkuserlogin(model.Username, model.Password, ipAddress);
 
                     if (result.lblconfirm.Equals("home"))
                     {
+                        Session.Clear();
+                        Session.Abandon();
+                        RegenerateSessionId();
+
                         Session["cpanelLogin"] = "true";
-                        string br = Session["user_branch"].ToString();
-                        String brr = ds.GetBranchName(br);
-                        Session["branch_namee"] = brr;
-                        Session["username"] = model.Username;//added
+                        Session["accesstoken"] = accesstoken;
+                        Session["username"] = model.Username;
                         Session["user_log"] = model.Username;
                         Session["UserId"] = result.UserId;
                         Session["user_name"] = result.user_name;
                         Session["user_branch"] = result.user_branch;
                         Session["user_roleid"] = result.user_roleid;
                         Session["user_status"] = result.status;
+
+                        string br = result.user_branch;
+                        String brr = ds.GetBranchName(br);
+                        Session["branch_namee"] = brr;
                         //model = ds.GetOnlineOfflineUsers(result.user_branch);
                         //Session["onlineofflineusers"] = list;
                         return RedirectToAction("Index", "Home");
@@ -145,7 +151,12 @@ namespace AljazeeraCPanel.Controllers
                     else
                 if (result.lblconfirm.Equals("change_pass"))
                     {
+                        Session.Clear();
+                        Session.Abandon();
+                        RegenerateSessionId();
+
                         Session["cpanelLogin"] = "changepass";
+                        Session["accesstoken"] = accesstoken;
                         Session["user_log"] = model.Username;
                         Session["UserId"] = result.UserId;
                         Session["user_name"] = result.user_name;
@@ -175,12 +186,12 @@ namespace AljazeeraCPanel.Controllers
                    // return RedirectToAction("Index", "Home");
 
 
-                }
-                else
-                {
-                    ModelState.AddModelError("", response.GetValue("Response_Message").ToString());
-                    return View(model);
-                }
+                //}
+                //else
+                //{
+                //    ModelState.AddModelError("", response.GetValue("Response_Message").ToString());
+                //    return View(model);
+                //}
             }
             catch (Exception e)
             {
@@ -221,6 +232,18 @@ namespace AljazeeraCPanel.Controllers
 
 
             }
+
+            // WAPT02-02: Validate new password against policy to prevent weak credentials after change
+            var (isPolicyValid, policyError) = PasswordPolicyValidator.ValidatePassword(model.newPassword);
+            if (!isPolicyValid)
+            {
+                ModelState.AddModelError("", "New password is invalid: " + policyError);
+                model.OldPassword = null;
+                model.newPassword = null;
+                model.confrimPassword = null;
+                return View();
+            }
+
             String username = Session["user_log"].ToString();
             String result = ds.changepass(username, model.OldPassword, model.newPassword);
             if (result.Equals("Your Password was Changed Successfully"))

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using System.Data;
 using AljazeeraCPanel.Context;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.IO;
-using System.Linq;
 using System.Text;
 using SIBCPanel.Context;
 using System.Security.Cryptography;
@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class UserController : Controller
     {
         DataSource ds = new DataSource();

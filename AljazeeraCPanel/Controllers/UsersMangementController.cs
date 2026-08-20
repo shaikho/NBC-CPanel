@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -17,6 +18,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class UsersMangementController : Controller
     {
         DataSource ds = new DataSource();

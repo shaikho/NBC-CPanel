@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using System.Web.Mvc;
- 
+
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class BarChartController : Controller
     {
         //

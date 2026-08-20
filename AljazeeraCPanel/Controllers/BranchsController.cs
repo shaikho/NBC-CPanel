@@ -1,5 +1,6 @@
 ﻿using FCBCPanel.Models;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -10,6 +11,7 @@ using System.Web.Mvc;
 
 namespace FCBCPanel.Controllers
 {
+    [AuthorizeSession]
     public class BranchsController : Controller
     {
         DataSource ds = new DataSource();

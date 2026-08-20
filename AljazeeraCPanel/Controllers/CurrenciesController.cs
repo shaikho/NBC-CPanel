@@ -1,5 +1,6 @@
 ﻿using FCBCPanel.Models;
 using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Filters;
 using SIBCPanel.Context;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using System.Web.Mvc;
 
 namespace FCBCPanel.Controllers
 {
+    [AuthorizeSession]
     public class CurrenciesController : Controller
     {
         DataSource ds = new DataSource();

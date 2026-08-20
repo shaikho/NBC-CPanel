@@ -1,4 +1,5 @@
 ﻿using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -18,7 +19,7 @@ using static iTextSharp.text.pdf.AcroFields;
 namespace AljazeeraCPanel.Controllers
 {
 
-    //old
+    [AuthorizeSession]
     public class CustomerReportController : Controller
     {
         DataSource ds = new DataSource();

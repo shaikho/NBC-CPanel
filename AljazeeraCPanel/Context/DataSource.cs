@@ -36,8 +36,11 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update jsb_user_service_reqs  set req_status='" + sts + "'  where req_id= " + id +" " ;
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE jsb_user_service_reqs SET req_status = :sts WHERE req_id = :id", con);
+                cmd.Parameters.Add("sts", OracleType.VarChar).Value = sts;
+                cmd.Parameters.Add("id", OracleType.Int32).Value = id;
+
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -49,8 +52,11 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update jsb_user_service_reqs  set req_status='" + sts + "'  where req_id= " + id + " ";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE jsb_user_service_reqs SET req_status = :sts WHERE req_id = :id", con);
+                cmd.Parameters.Add("sts", OracleType.VarChar).Value = sts;
+                cmd.Parameters.Add("id", OracleType.Int32).Value = id;
+
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -62,7 +68,9 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("delete from tbl_rolemaster where roleid = '" + roleid + "'", con);
+                OracleCommand cmd = new OracleCommand("DELETE FROM tbl_rolemaster WHERE roleid = :roleid", con);
+                cmd.Parameters.Add("roleid", OracleType.Int32).Value = roleid;
+
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -74,7 +82,9 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select count(user_log) as userscount from users where roleid = '" + roleid + "'", con);
+                OracleCommand cmd = new OracleCommand("SELECT count(user_log) AS userscount FROM users WHERE roleid = :roleid", con);
+                cmd.Parameters.Add("roleid", OracleType.Int32).Value = roleid;
+
                 int count = 0;
                 if (con.State == ConnectionState.Closed)
                 {
@@ -112,9 +122,10 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update  card_reqs set req_status='" + sts + "'  where request_id=" + id;
-
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE card_reqs SET req_status = :sts WHERE request_id = :id", con);
+                cmd.Parameters.Add("sts", OracleType.VarChar).Value = sts;
+                cmd.Parameters.Add("id", OracleType.Int32).Value = id;
 
                 con.Open();
                 int result = -1;
@@ -123,13 +134,14 @@ namespace SIBCPanel.Context
             }
         }
 
-        public int Updateinfo( string user , string p)
+        public int Updateinfo(string user, string p)
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update  jsb_security_master set user_pwd ='" + p + "'  where user_log = '" + user + "' ";
-
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE jsb_security_master SET user_pwd = :pwd WHERE user_log = :userlog", con);
+                cmd.Parameters.Add("pwd", OracleType.VarChar).Value = p;
+                cmd.Parameters.Add("userlog", OracleType.VarChar).Value = user;
 
                 con.Open();
                 int result = -1;
@@ -143,23 +155,21 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update users_jsb set user_mobile = '" + phonenumber + "'  ,user_email = '"+email+"',user_address = '" + address + "' where user_id = " + userid + "";
-                OracleCommand cmd = new OracleCommand(query, con);
+                // WAPT01-04: Parameterized — no string concatenation
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE users_jsb SET user_mobile = :phonenumber, user_email = :email, user_address = :address WHERE user_id = :userid", con);
+                cmd.Parameters.Add("phonenumber", OracleType.VarChar).Value = phonenumber;
+                cmd.Parameters.Add("email", OracleType.VarChar).Value = email;
+                cmd.Parameters.Add("address", OracleType.VarChar).Value = address;
+                cmd.Parameters.Add("userid", OracleType.Int32).Value = userid;
+
                 if (con.State == ConnectionState.Closed)
                 {
                     con.Open();
                 }
-                int result = -1;
-                result = cmd.ExecuteNonQuery();
-                if (result == -1)
-                {
-                    response = false;
-                }
-                else
-                {
-                    response = true;
-                }
-            //}
+
+                int result = cmd.ExecuteNonQuery();
+                response = result != -1;
                 con.Close();
             }
             return response;
@@ -169,23 +179,18 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update users_jsb set user_status = '" + status + "'  where user_log = '" + userid + "' ";
-                OracleCommand cmd = new OracleCommand(query, con);
+                // WAPT01-02: Parameterized — no string concatenation
+                OracleCommand cmd = new OracleCommand(
+                    "UPDATE users_jsb SET user_status = :status WHERE user_log = :userid", con);
+                cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                cmd.Parameters.Add("userid", OracleType.VarChar).Value = userid;
+
                 if (con.State == ConnectionState.Closed)
                 {
                     con.Open();
                 }
-                int result = -1;
-                result = cmd.ExecuteNonQuery();
-                if (result == -1)
-                {
-                    response = false;
-                }
-                else
-                {
-                    response = true;
-                }
-                //}
+                int result = cmd.ExecuteNonQuery();
+                response = result != -1;
                 con.Close();
             }
             return response;
@@ -197,7 +202,9 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select * from EPORT where tran_payserviceid = '" + portsnotice + "'", con);
+                OracleCommand cmd = new OracleCommand("SELECT * FROM EPORT WHERE tran_payserviceid = :portsnotice", con);
+                cmd.Parameters.Add("portsnotice", OracleType.VarChar).Value = portsnotice;
+
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -259,7 +266,10 @@ namespace SIBCPanel.Context
             CustomerTransferReportViewModel transaction = new CustomerTransferReportViewModel();
             using (OracleConnection connection = new OracleConnection(conString))
             {
-                OracleCommand command = new OracleCommand("select * from trans_log inner join users on users.user_id = trans_log.user_id where tran_id = '" + tran_id + "'", connection);
+                OracleCommand command = new OracleCommand(
+                    "SELECT * FROM trans_log INNER JOIN users ON users.user_id = trans_log.user_id WHERE tran_id = :tran_id", connection);
+                command.Parameters.Add("tran_id", OracleType.VarChar).Value = tran_id;
+
                 connection.Open();
                 OracleDataReader dr = command.ExecuteReader();
 
@@ -366,7 +376,10 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 //OracleCommand cmd = new OracleCommand("select * from ( select * from log_req_res where to_date(substr(request_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(request_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') and RESPONSE_DATA <> 'null' order by request_date desc ) where request_data like '%pp%' or request_data like '%ps%' or request_data like '%PP%' or request_data like '%PS%'", con);
-                OracleCommand cmd = new OracleCommand("select * from billers_payment_log where BBL_BILLERID = '" + biller + "' and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') order by bbl_trandate desc ", con);
+                OracleCommand cmd = new OracleCommand("select * from billers_payment_log where BBL_BILLERID = :biller and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') >= to_date(:fromdate,'yyyy-mm-dd') and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') <= to_date(:todate,'yyyy-mm-dd') order by bbl_trandate desc", con);
+                cmd.Parameters.Add("biller", OracleType.VarChar).Value = biller;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
 
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
@@ -503,7 +516,20 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' " + sqlbranch + " " + sqlstatus + "", con);
+                string query = "select trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer'";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -527,18 +553,26 @@ namespace SIBCPanel.Context
 
         public List<CustomerTransferReportViewModel> GetCreditAPITransaction(string branch, string status, string fromdate, string todate)
         {
-            string sqlbranch = ""; string sqlstatus = "";
-
-            if (branch != "000")
-                sqlbranch = " and substr(users.account,3,3) = " + branch + " ";
-            if (status != "All")
-                sqlstatus = " and tran_status = '" + status + "' ";
-
             List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy')>= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')", con);
+                string query = "select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy')>= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -563,18 +597,26 @@ namespace SIBCPanel.Context
 
         public List<CustomerTransferReportViewModel> GetUserReg(string branch, string status, string fromdate, string todate)
         {
-            string sqlbranch = ""; string sqlstatus = "";
-
-            if (branch != "000")
-                sqlbranch = " and substr(users.account,3,3) = " + branch + " ";
-            if (status != "All")
-                sqlstatus = " and tran_status = '" + status + "' ";
-
             List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy')>= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')", con);
+                string query = "select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy')>= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -610,7 +652,20 @@ namespace SIBCPanel.Context
             List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' " + sqlbranch + " " + sqlstatus + " ", con);
+                string query = "select trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer'";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -649,7 +704,23 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') " + sqlinc + " ", con);
+                string query = "select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                query += " " + sqlinc;
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -691,7 +762,22 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ", con);
+                string query = "select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
                 
@@ -725,8 +811,19 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id " + sqlbranch + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') group by tran_name", con);
-                
+                string query = "select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id where to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch_code != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch_code";
+                    cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
+                }
+                query += " group by tran_name";
+                cmd.CommandText = query;
+
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -755,7 +852,16 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id " + sqlbranch + "  group by tran_name", con);
+                string query = "select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (branch_code != "000")
+                {
+                    query += " where substr(users.account,3,3) = :branch_code";
+                    cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
+                }
+                query += " group by tran_name";
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -782,7 +888,9 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select user_log,last_login,decode(user_status,'A','Active','D','Deactive','DE','Deleted','U','Unauthorized','P','Pending','N/A') as status ,decode(catogry,'1','Personal','2','Operator','3','Authorizor','N/A') as category,last_log_ip,user_id from users where to_date(substr(CREATED_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(CREATED_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')", con);
+                OracleCommand cmd = new OracleCommand("select user_log,last_login,decode(user_status,'A','Active','D','Deactive','DE','Deleted','U','Unauthorized','P','Pending','N/A') as status ,decode(catogry,'1','Personal','2','Operator','3','Authorizor','N/A') as category,last_log_ip,user_id from users where to_date(substr(CREATED_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(CREATED_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')", con);
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -821,7 +929,18 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select branch_name,count(tran_amount) as count,sum(tran_amount) as amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where substr(users.account,3,3) = branch_code " + sqltransactionname + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') group by branch_name", con);
+                string query = "select branch_name,count(tran_amount) as count,sum(tran_amount) as amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where substr(users.account,3,3) = branch_code and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (transaction_name != "All")
+                {
+                    query += " and tran_name = :transaction_name";
+                    cmd.Parameters.Add("transaction_name", OracleType.VarChar).Value = transaction_name;
+                }
+                query += " group by branch_name";
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -850,7 +969,16 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select branch_name,count(tran_amount) as count,sum(tran_amount) as amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where substr(users.account,3,3) = branch_code " + sqltransactionname + "  group by branch_name", con);
+                string query = "select branch_name,count(tran_amount) as count,sum(tran_amount) as amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where substr(users.account,3,3) = branch_code";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (transaction_name != "All")
+                {
+                    query += " and tran_name = :transaction_name";
+                    cmd.Parameters.Add("transaction_name", OracleType.VarChar).Value = transaction_name;
+                }
+                query += " group by branch_name";
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -887,7 +1015,36 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select * from trans_log inner join users on trans_log.user_id = users.user_id where users.user_id > 0 " + sqldate + " " + sqlbranch + " " + sqlstatus + " " + sqlaccountnumber + " " + sqltoaccount + " ", con);
+                string query = "select * from trans_log inner join users on trans_log.user_id = users.user_id where users.user_id > 0";
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (fromdate != "")
+                {
+                    query += " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                    cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                    cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                }
+                if (branch != "000")
+                {
+                    query += " and substr(users.account,3,3) = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "All")
+                {
+                    query += " and tran_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                if (accountnumber != "")
+                {
+                    query += " and users.user_log = :accountnumber";
+                    cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+                }
+                if (toaccount != "")
+                {
+                    query += " and tran_req like :toaccount";
+                    cmd.Parameters.Add("toaccount", OracleType.VarChar).Value = "%" + toaccount + "%";
+                }
+                cmd.CommandText = query;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -920,7 +1077,9 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select * from trans_log where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')", con);
+                OracleCommand cmd = new OracleCommand("select * from trans_log where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')", con);
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -949,7 +1108,9 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select * from trans_log where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')", con);
+                OracleCommand cmd = new OracleCommand("select * from trans_log where tran_name = 'AccountToCardTransfer' and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')", con);
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -1034,8 +1195,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("", con);
-                cmd.CommandText = "select curr_name from currency where curr_code = '" + CurrencyCode + "'";
+                OracleCommand cmd = new OracleCommand("select curr_name from currency where curr_code = :CurrencyCode", con);
+                cmd.Parameters.Add("CurrencyCode", OracleType.VarChar).Value = CurrencyCode;
 
                 con.Open();
                 using (IDataReader dataReader = cmd.ExecuteReader())
@@ -1047,7 +1208,6 @@ namespace SIBCPanel.Context
                             CurrencyName = (string)dataReader["curr_name"];
                         }
                     }
-                    //branchs = branchs.Substring(1);
                     return CurrencyName;
                 }
             }
@@ -1057,8 +1217,8 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update act_types set act_sts = '1' where act_type_code = '" + account_type_code + "'";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("update act_types set act_sts = '1' where act_type_code = :account_type_code", con);
+                cmd.Parameters.Add("account_type_code", OracleType.VarChar).Value = account_type_code;
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -1079,8 +1239,8 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update branchs set branch_sts = '1' where branch_code = '" + branch_code + "'";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("update branchs set branch_sts = '1' where branch_code = :branch_code", con);
+                cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -1101,8 +1261,8 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "delete from act_types where act_type_code = '" + account_type_code + "'";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("delete from act_types where act_type_code = :account_type_code", con);
+                cmd.Parameters.Add("account_type_code", OracleType.VarChar).Value = account_type_code;
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -1123,8 +1283,8 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "delete from branchs where branch_code = '" + branch_code + "'";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("delete from branchs where branch_code = :branch_code", con);
+                cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -1312,7 +1472,8 @@ namespace SIBCPanel.Context
             List<Transferlimit> branchs = new List<Transferlimit>();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select transfer_limit.tran_id,services.service_name,transfer_limit.amount_limit_transaction,transfer_limit.amount_limit_day,transfer_limit.tranno_limit_day from transfer_limit inner join services on transfer_limit.service_id = services.service_id and role_id = '" + roleid + "' and service_status = '1'", con);
+                OracleCommand cmd = new OracleCommand("select transfer_limit.tran_id,services.service_name,transfer_limit.amount_limit_transaction,transfer_limit.amount_limit_day,transfer_limit.tranno_limit_day from transfer_limit inner join services on transfer_limit.service_id = services.service_id and role_id = :roleid and service_status = '1'", con);
+                cmd.Parameters.Add("roleid", OracleType.VarChar).Value = roleid;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1341,7 +1502,8 @@ namespace SIBCPanel.Context
             Transferlimit service = new Transferlimit();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select transfer_limit.tran_id,services.service_name,transfer_limit.amount_limit_transaction,transfer_limit.amount_limit_day,transfer_limit.tranno_limit_day from transfer_limit inner join services on transfer_limit.service_id = services.service_id and role_id = '" + roleid + "' and service_status = '1'", con);
+                OracleCommand cmd = new OracleCommand("select transfer_limit.tran_id,services.service_name,transfer_limit.amount_limit_transaction,transfer_limit.amount_limit_day,transfer_limit.tranno_limit_day from transfer_limit inner join services on transfer_limit.service_id = services.service_id and role_id = :roleid and service_status = '1'", con);
+                cmd.Parameters.Add("roleid", OracleType.VarChar).Value = roleid;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1367,8 +1529,11 @@ namespace SIBCPanel.Context
             Boolean response = false;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update transfer_limit set amount_limit_transaction = '" + model.amount_limit + "',amount_limit_day = '" + model.daily_limit + "',tranno_limit_day = '" + model.number_limit + "' where tran_id = '" + model.tran_id + "'";
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("update transfer_limit set amount_limit_transaction = :amount_limit, amount_limit_day = :daily_limit, tranno_limit_day = :number_limit where tran_id = :tran_id", con);
+                cmd.Parameters.Add("amount_limit", OracleType.VarChar).Value = model.amount_limit;
+                cmd.Parameters.Add("daily_limit", OracleType.VarChar).Value = model.daily_limit;
+                cmd.Parameters.Add("number_limit", OracleType.VarChar).Value = model.number_limit;
+                cmd.Parameters.Add("tran_id", OracleType.VarChar).Value = model.tran_id;
                 con.Open();
                 int result = -1;
                 result = cmd.ExecuteNonQuery();
@@ -1553,7 +1718,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("INSERT INTO SERVICES  (service_id,service_name,service_code,service_status)VALUES(SERVSEQ.nextval,'" + model.service_name + "', RPAD(SERVSEQ.currval, 5, '0'),'A')", con);
+                OracleCommand cmd = new OracleCommand("INSERT INTO SERVICES (service_id,service_name,service_code,service_status) VALUES (SERVSEQ.nextval,:service_name, RPAD(SERVSEQ.currval, 5, '0'),'A')", con);
+                cmd.Parameters.Add("service_name", OracleType.VarChar).Value = model.service_name;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1567,7 +1733,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select  branch_code,branch_name,branch_sts,branch_code_no,branch_db_link,branch_name_ar from branchs where branch_code = " + branchcode, con);
+                OracleCommand cmd = new OracleCommand("select branch_code,branch_name,branch_sts,branch_code_no,branch_db_link,branch_name_ar from branchs where branch_code = :branchcode", con);
+                cmd.Parameters.Add("branchcode", OracleType.VarChar).Value = branchcode;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -1592,7 +1759,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("delete from branchs where branch_code = '" + branch_code + "'", con);
+                OracleCommand cmd = new OracleCommand("delete from branchs where branch_code = :branch_code", con);
+                cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1885,7 +2053,12 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update branchs set branch_name = '" + model.branch_name + "',branch_sts = '" + model.branch_status + "' ,branch_code_no = '" + model.branch_code_no + "',branch_name_ar = '" + model.branch_name_arabic + "'  where branch_code ='" + model.branch_code + "'", con);
+                OracleCommand cmd = new OracleCommand("Update branchs set branch_name = :branch_name, branch_sts = :branch_status, branch_code_no = :branch_code_no, branch_name_ar = :branch_name_ar where branch_code = :branch_code", con);
+                cmd.Parameters.Add("branch_name", OracleType.VarChar).Value = model.branch_name;
+                cmd.Parameters.Add("branch_status", OracleType.VarChar).Value = model.branch_status;
+                cmd.Parameters.Add("branch_code_no", OracleType.VarChar).Value = model.branch_code_no;
+                cmd.Parameters.Add("branch_name_ar", OracleType.VarChar).Value = model.branch_name_arabic;
+                cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = model.branch_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1909,49 +2082,28 @@ namespace SIBCPanel.Context
         }
         public int insert(userInsertModel model)
         {
-       
             OracleCommand cmd;
-
-            /////
-            ///
-           // string p = CreatePassword(8);
-
-            //string enc_pwd = Encrypt(p);
-
-
-            /////
-            //enc_pwd2 = enc_pwd;
-
-            //insertmodel.roleidcreated = roleid;
-
-            //string enc_pwd = MD5Hash(p);
-
-
-
-
-            //model.Password = enc_pwd;
-
-            //string p = CreatePassword(8);
-
 
             using (OracleConnection con = new OracleConnection(conString))
             {
                 if (model.roleid == "2")
                 {
-                    //cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCHUSER_STATUS ,ROLEIDCREATED ,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE)VALUES('" + model.user_name + "','R6K2zyfxJqbwmXqixfkRMw==','" + model.name + "','T',CP_USERID.nextval,'" + model.roleid + "','000','A',"+model.roleidcreated+" ,'T' , '"+model.email+"' , '"+ model.phone+"')", con);
-                    //// cmd = new OracleCommand("INSERT INTO security_master (USER_LOG,USER_PASS,USER_NAME,USER_LASTLOGIN,USER_LASTWORK,USER_ID,ROLEID,USER_BRANCH,USER_PAS,USER_STAT)VALUES('" + model.user_name + "','R6K2zyfxJqbwmXqixfkRMw==','" + model.name + "','T',NULL,CP_USERID.nextval,'" + model.roleid + "','000',NULL,'A')", con);
-
-                    cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCHUSER_STATUS ,ROLEIDCREATED ,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE)VALUES('" + model.user_name + "','"+model.Password+"','" + model.name + "','T',CP_USERID.nextval,'" + model.roleid + "','000','UA'," + model.roleidcreated + " ,'T' , '" + model.email + "' , '" + model.phone + "')", con);
-                    // cmd = new OracleCommand("INSERT INTO security_master (USER_LOG,USER_PASS,USER_NAME,USER_LASTLOGIN,USER_LASTWORK,USER_ID,ROLEID,USER_BRANCH,USER_PAS,USER_STAT)VALUES('" + model.user_name + "','R6K2zyfxJqbwmXqixfkRMw==','" + model.name + "','T',NULL,CP_USERID.nextval,'" + model.roleid + "','000',NULL,'A')", con);
-
+                    cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCHUSER_STATUS,ROLEIDCREATED,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE) VALUES(:user_log,:user_pwd,:user_name,'T',CP_USERID.nextval,:roleid,'000','UA',:roleidcreated,'T',:user_email,:user_mobile)", con);
                 }
-
                 else
                 {
-                    //cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCH,USER_STATUS ,ROLEIDCREATED,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE)VALUES('" + model.user_name + "','R6K2zyfxJqbwmXqixfkRMw==','" + model.name + "','T',CP_USERID.nextval,'" + model.roleid + "','" + model.BranchCode + "','A' ,"+model.roleidcreated+ " ,'T' , '"+model.email+"' , '"+ model.phone+"')", con);
-                    cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCH,USER_STATUS ,ROLEIDCREATED,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE)VALUES('" + model.user_name + "','"+model.Password+"','" + model.name + "','T',CP_USERID.nextval,'" + model.roleid + "','" + model.BranchCode + "','UA' ," + model.roleidcreated + " ,'T' , '" + model.email + "' , '" + model.phone + "')", con);
-
+                    cmd = new OracleCommand("INSERT INTO jsb_security_master (USER_LOG,USER_PWD,USER_NAME,USER_LAST_LOGIN,USER_ID,ROLEID,USER_BRANCH,USER_STATUS,ROLEIDCREATED,USER_FIRST_LOGIN_STATUS,USER_EMAIL,USER_MOBILE) VALUES(:user_log,:user_pwd,:user_name,'T',CP_USERID.nextval,:roleid,:branch_code,'UA',:roleidcreated,'T',:user_email,:user_mobile)", con);
+                    cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = model.BranchCode;
                 }
+
+                cmd.Parameters.Add("user_log", OracleType.VarChar).Value = model.user_name;
+                cmd.Parameters.Add("user_pwd", OracleType.VarChar).Value = model.Password;
+                cmd.Parameters.Add("user_name", OracleType.VarChar).Value = model.name;
+                cmd.Parameters.Add("roleid", OracleType.VarChar).Value = model.roleid;
+                cmd.Parameters.Add("roleidcreated", OracleType.VarChar).Value = model.roleidcreated;
+                cmd.Parameters.Add("user_email", OracleType.VarChar).Value = model.email;
+                cmd.Parameters.Add("user_mobile", OracleType.VarChar).Value = model.phone;
+
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1963,7 +2115,14 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_log ='" + model.user_name + "',user_name ='" + model.name + "',roleid='" + model.roleid + "',user_branch='" + model.BranchCode + "' , user_mobile = '"+model.phone+"' , user_email = '"+model.email+"' ,user_status = 'RED'  where  user_id='" + model.user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_log = :user_log, user_name = :user_name, roleid = :roleid, user_branch = :user_branch, user_mobile = :user_mobile, user_email = :user_email, user_status = 'RED' where user_id = :user_id", con);
+                cmd.Parameters.Add("user_log", OracleType.VarChar).Value = model.user_name;
+                cmd.Parameters.Add("user_name", OracleType.VarChar).Value = model.name;
+                cmd.Parameters.Add("roleid", OracleType.VarChar).Value = model.roleid;
+                cmd.Parameters.Add("user_branch", OracleType.VarChar).Value = model.BranchCode;
+                cmd.Parameters.Add("user_mobile", OracleType.VarChar).Value = model.phone;
+                cmd.Parameters.Add("user_email", OracleType.VarChar).Value = model.email;
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = model.user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1975,7 +2134,10 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update SERVICES  set service_name ='" + model.service_name + "',service_status = '" + model.service_status + "' where  service_id='" + model.service_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update SERVICES set service_name = :service_name, service_status = :service_status where service_id = :service_id", con);
+                cmd.Parameters.Add("service_name", OracleType.VarChar).Value = model.service_name;
+                cmd.Parameters.Add("service_status", OracleType.VarChar).Value = model.service_status;
+                cmd.Parameters.Add("service_id", OracleType.Int32).Value = int.Parse(model.service_id);
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1988,7 +2150,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select  user_id, user_log, user_name,roleid,user_branch , user_mobile,user_email from jsb_security_master where user_id=" + id, con);
+                OracleCommand cmd = new OracleCommand("select user_id, user_log, user_name, roleid, user_branch, user_mobile, user_email from jsb_security_master where user_id = :id", con);
+                cmd.Parameters.Add("id", OracleType.Int32).Value = id;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -2018,7 +2181,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select service_id,service_name,service_code,service_status from SERVICES  where service_id=" + id, con);
+                OracleCommand cmd = new OracleCommand("select service_id,service_name,service_code,service_status from SERVICES where service_id = :id", con);
+                cmd.Parameters.Add("id", OracleType.Int32).Value = id;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -2221,11 +2385,9 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-
-                string query = "select count(user_log) as count from jsb_security_master where user_log = '" + username + "'";
-
-                using (OracleCommand cmd = new OracleCommand(query))
+                using (OracleCommand cmd = new OracleCommand("select count(user_log) as count from jsb_security_master where user_log = :username"))
                 {
+                    cmd.Parameters.Add("username", OracleType.VarChar).Value = username;
                     cmd.Connection = con;
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
@@ -2258,12 +2420,24 @@ namespace SIBCPanel.Context
                 }
                 else
                 {
-                    query = "select count(users.user_id) as users from users where users.login_status = 1 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 1 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 2 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 3 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 0 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 1 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 2 and SUBSTR(users.account,3,3) = '" + branchcode + "' union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 3 and SUBSTR(users.account,3,3) = '" + branchcode + "' ";
+                    query = "select count(users.user_id) as users from users where users.login_status = 1 and SUBSTR(users.account,3,3) = :b1 union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 1 and SUBSTR(users.account,3,3) = :b2 union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 2 and SUBSTR(users.account,3,3) = :b3 union all select count(users.user_id) as users from users where users.login_status = 1 and users.catogry = 3 and SUBSTR(users.account,3,3) = :b4 union all select count(users.user_id) as users from users where users.login_status = 0 and SUBSTR(users.account,3,3) = :b5 union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 1 and SUBSTR(users.account,3,3) = :b6 union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 2 and SUBSTR(users.account,3,3) = :b7 union all select count(users.user_id) as users from users where users.login_status = 0 and users.catogry = 3 and SUBSTR(users.account,3,3) = :b8";
                 }
 
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
+                    if (branchcode != "000")
+                    {
+                        cmd.Parameters.Add("b1", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b2", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b3", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b4", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b5", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b6", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b7", OracleType.VarChar).Value = branchcode;
+                        cmd.Parameters.Add("b8", OracleType.VarChar).Value = branchcode;
+                    }
+
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -2294,9 +2468,29 @@ namespace SIBCPanel.Context
                 if (status != "0" && status != "All")
                     sqlstatus = "  and user_status = '" + status + "'";
 
-                string query = "select user_name,def_acc,branch_name,decode(user_status,'A','Active','B','Blocked','U','Authorized','P','Pending','DE','Deleted','S','Stopped','D','DeActive') as status from users inner join branchs on substr(users.account,3,3) = branchs.branch_code where user_id > 0 "+sqlstatus+" " + sqlbranch + " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm-dd-yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm-dd-yyyy') order by branch_name";
+                string query = "select user_name,def_acc,branch_name,decode(user_status,'A','Active','B','Blocked','U','Authorized','P','Pending','DE','Deleted','S','Stopped','D','DeActive') as status from users inner join branchs on substr(users.account,3,3) = branchs.branch_code where user_id > 0 and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm-dd-yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date(:todate,'mm-dd-yyyy')";
 
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                if (branch != "0" && branch != "000")
+                {
+                    query += " and substr(account,3,3)=:branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (status != "0" && status != "All")
+                {
+                    query += " and user_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                if (category != "0")
+                {
+                    query += " and catogry = :category";
+                    cmd.Parameters.Add("category", OracleType.VarChar).Value = category;
+                }
+                query += " order by branch_name";
+                cmd.CommandText = query;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2340,9 +2534,33 @@ namespace SIBCPanel.Context
 
                // string query = "select branch_name_en,count(user_id) as count from users inner join branchs on substr(users.account,3,3) = branchs.branch_code where user_id > 0 and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date('"+fromdate+"','mm-dd-yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date('"+todate+"','mm-dd-yyyy') "+sqlcategory+" "+sqlbranch+" "+sqlstatus+" group by branch_name_en order by branch_name_en";
 
-                string query = "select distinct  branchs.branch_name_en,count(users_jsb.user_id) as count ,  decode(users_jsb.USER_STATUS , 'A','Active','B','Blocked','D','DeActive' , 'P', 'Pendding','U' , 'Authorized','R','Rejected','DE','Deleted','S','Stopped') as USER_STATUS  from users_jsb inner join user_acc_link_jsb on users_jsb.user_log = user_acc_link_jsb.user_id inner join branchs on branchs.branch_code = user_acc_link_jsb.acc_branch  where users_jsb.user_id > 0  " + sqldate + "  " + sqlbranch + " " + sqlstatus + "  group by branchs.branch_name_en ,users_jsb.user_status  order by branchs.branch_name_en";
+                string query = "select distinct branchs.branch_name_en,count(users_jsb.user_id) as count, decode(users_jsb.USER_STATUS,'A','Active','B','Blocked','D','DeActive','P','Pendding','U','Authorized','R','Rejected','DE','Deleted','S','Stopped') as USER_STATUS from users_jsb inner join user_acc_link_jsb on users_jsb.user_log = user_acc_link_jsb.user_id inner join branchs on branchs.branch_code = user_acc_link_jsb.acc_branch where users_jsb.user_id > 0";
 
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (branch != "0" && branch != "000")
+                {
+                    query += " and branchs.branch_code = :branch";
+                    cmd.Parameters.Add("branch", OracleType.VarChar).Value = branch;
+                }
+                if (fromdate != "" || todate != "")
+                {
+                    query += " and to_date(substr(users_jsb.created_date,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm-dd-yyyy') and to_date(substr(users_jsb.created_date,0,9),'dd-mon-yy') <= to_date(:todate,'mm-dd-yyyy')";
+                    cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                    cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                }
+                if (category != "0")
+                {
+                    query += " and catogry = :category";
+                    cmd.Parameters.Add("category", OracleType.VarChar).Value = category;
+                }
+                if (status != "0" && status != "All")
+                {
+                    query += " and users_jsb.user_status = :status";
+                    cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                }
+                query += " group by branchs.branch_name_en, users_jsb.user_status order by branchs.branch_name_en";
+                cmd.CommandText = query;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2532,7 +2750,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select count(user_log) as userscount from jsb_security_master where roleid = '" + roleid + "'", con);
+                OracleCommand cmd = new OracleCommand("select count(user_log) as userscount from jsb_security_master where roleid = :roleid", con);
+                cmd.Parameters.Add("roleid", OracleType.Int32).Value = roleid;
                 int count = 0;
                 if (con.State == ConnectionState.Closed)
                 {
@@ -2551,7 +2770,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("delete from jsb_roles_master where role_id = '" + roleid + "'", con);
+                OracleCommand cmd = new OracleCommand("delete from jsb_roles_master where role_id = :roleid", con);
+                cmd.Parameters.Add("roleid", OracleType.Int32).Value = roleid;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2559,15 +2779,13 @@ namespace SIBCPanel.Context
             }
         }
 
-        public int resetpassworduserA(int user_id  , string p )
+        public int resetpassworduserA(int user_id, string p)
         {
-            //string p = CreatePassword(8);
-
-            //string enc_pwd = Encrypt(p);
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LASTLOGIN='F',USER_PAS='admin123',USER_STATUS ='A', USER_PASS='R6K2zyfxJqbwmXqixfkRMw==' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LAST_LOGIN='F',USER_STATUS ='A', USER_PWD='"+ p + "' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set USER_LAST_LOGIN='F', USER_STATUS='A', USER_PWD=:pwd where user_id=:user_id", con);
+                cmd.Parameters.Add("pwd", OracleType.VarChar).Value = p;
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
@@ -2577,13 +2795,10 @@ namespace SIBCPanel.Context
         }
         public int resetpassworduser(int user_id)
         {
-            //string p = CreatePassword(8);
-
-            //string enc_pwd = Encrypt(p);
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LASTLOGIN='F',USER_PAS='admin123',USER_STATUS ='A', USER_PASS='R6K2zyfxJqbwmXqixfkRMw==' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LAST_LOGIN='F',USER_STATUS ='RRP' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set USER_LAST_LOGIN='F', USER_STATUS='RRP' where user_id=:user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
@@ -2604,11 +2819,12 @@ namespace SIBCPanel.Context
             string result = "0";
             string query1;
                // List<userlist> info = new List<userlist>();
-            query1 = "select USER_MOBILE   from  jsb_security_master  where  user_id='" + user_id + "'"; //" select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '1001' or jsb_service_req_types.req_type_id = '1002') and jsb_user_service_reqs.receiving_branch = '" + bracode + "' ";
+            query1 = "select USER_MOBILE from jsb_security_master where user_id = :user_id";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 con.Open();
 
@@ -2652,11 +2868,12 @@ namespace SIBCPanel.Context
             string result = "0";
             string query1;
              List<userlist> info = new List<userlist>();
-            query1 = "select user_log , user_name ,  user_mobile   from  jsb_security_master  where  user_id='" + user_id + "'"; //" select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '1001' or jsb_service_req_types.req_type_id = '1002') and jsb_user_service_reqs.receiving_branch = '" + bracode + "' ";
+            query1 = "select user_log, user_name, user_mobile from jsb_security_master where user_id = :user_id";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 con.Open();
 
@@ -2697,8 +2914,9 @@ namespace SIBCPanel.Context
             string enc_pwd = Encrypt(p);
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LASTLOGIN='F',USER_PAS='admin123',USER_STATUS ='A', USER_PASS='R6K2zyfxJqbwmXqixfkRMw==' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LAST_LOGIN='F',USER_STATUS ='A', USER_PWD='" + enc_pwd + "' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set USER_LAST_LOGIN='F', USER_STATUS='A', USER_PWD=:enc_pwd where user_id=:user_id", con);
+                cmd.Parameters.Add("enc_pwd", OracleType.VarChar).Value = enc_pwd;
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
@@ -2707,15 +2925,16 @@ namespace SIBCPanel.Context
             }
         }
 
-        public int UpdateuserSTS(int user_id , string sts)
+        public int UpdateuserSTS(int user_id, string sts)
         {
             string p = CreatePassword(8);
 
             string enc_pwd = Encrypt(p);
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_LASTLOGIN='F',USER_PAS='admin123',USER_STATUS ='A', USER_PASS='R6K2zyfxJqbwmXqixfkRMw==' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  USER_STATUS ='"+sts+"'  where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set USER_STATUS = :sts where user_id = :user_id", con);
+                cmd.Parameters.Add("sts", OracleType.VarChar).Value = sts;
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
 
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
@@ -2728,7 +2947,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='RDA' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='RDA' where user_id=:user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2740,7 +2960,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='RA' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='RA' where user_id=:user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2752,8 +2973,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update security_master set USER_STAT ='DE' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='RD' where  user_id = '" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='RD' where user_id = :user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2766,7 +2987,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='D' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='D' where user_id=:user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2778,7 +3000,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='A' where  user_id='" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='A' where user_id=:user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2790,8 +3013,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //OracleCommand cmd = new OracleCommand("Update security_master set USER_STAT ='DE' where  user_id='" + user_id + "'", con);
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set  user_status='DE' where  user_id = '" + user_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_status='DE' where user_id = :user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2816,7 +3039,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update SERVICES  set service_status ='DE' where  service_id='" + service_id + "'", con);
+                OracleCommand cmd = new OracleCommand("Update SERVICES set service_status='DE' where service_id=:service_id", con);
+                cmd.Parameters.Add("service_id", OracleType.Int32).Value = service_id;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -2833,11 +3057,12 @@ namespace SIBCPanel.Context
             String query1, result;
             List<ChqRequest> customer = new List<ChqRequest>();
 
-            query1 = " select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '1001' or jsb_service_req_types.req_type_id = '1002') and jsb_user_service_reqs.receiving_branch = '"+ bracode +"' ";
+            query1 = " select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '1001' or jsb_service_req_types.req_type_id = '1002') and jsb_user_service_reqs.receiving_branch = :bracode ";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                cmd.Parameters.Add("bracode", OracleType.VarChar).Value = bracode;
 
                 con.Open();
 
@@ -2909,11 +3134,12 @@ namespace SIBCPanel.Context
             String name, act, date, booksize, reqdate, userid, reqsts, branchcode, branchname;
             String query1, result;
             List<ChqRequest> customer = new List<ChqRequest>();
-            query1 = " select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '2001' or jsb_service_req_types.req_type_id = '2002') and jsb_user_service_reqs.receiving_branch = '" + bracode + "' ";
+            query1 = " select req_id,user_id,req_creation_date,req_status,acc_no,receiving_branch,branch_name_en,req_type_name_en from jsb_user_service_reqs inner join jsb_service_req_types on jsb_user_service_reqs.req_type = jsb_service_req_types.req_type_id inner join branchs on jsb_user_service_reqs.receiving_branch = branchs.branch_code and ( jsb_service_req_types.req_type_id = '2001' or jsb_service_req_types.req_type_id = '2002') and jsb_user_service_reqs.receiving_branch = :bracode ";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                cmd.Parameters.Add("bracode", OracleType.VarChar).Value = bracode;
 
                 con.Open();
 
@@ -2987,7 +3213,7 @@ namespace SIBCPanel.Context
             List<ChqRequest> customer = new List<ChqRequest>();
             if (!bracode.Equals("000"))
             {
-                query1 = "select users.user_name||' - '||SUBSTR(cheque_reqs.account_no,14,7) as customer,cheque_reqs.requested_size,cheque_reqs.req_date,cheque_reqs.req_status from cheque_reqs inner join users on users.user_id = cheque_reqs.user_id where cheque_reqs.req_status <> 'process' and SUBSTR(cheque_reqs.account_no,3,3) = '" + bracode + "'";
+                query1 = "select users.user_name||' - '||SUBSTR(cheque_reqs.account_no,14,7) as customer,cheque_reqs.requested_size,cheque_reqs.req_date,cheque_reqs.req_status from cheque_reqs inner join users on users.user_id = cheque_reqs.user_id where cheque_reqs.req_status <> 'process' and SUBSTR(cheque_reqs.account_no,3,3) = :bracode";
             }
             else
             {
@@ -2997,6 +3223,10 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                if (!bracode.Equals("000"))
+                {
+                    cmd.Parameters.Add("bracode", OracleType.VarChar).Value = bracode;
+                }
 
                 con.Open();
 
@@ -3087,7 +3317,7 @@ namespace SIBCPanel.Context
             if (!bracode.Equals("000"))
             {
                 //query1 = "select c.request_id,branch_name||'-'||curr_name||'-'||act_name||'-'|| SUBSTR(c.account_no,14) account_no,c.requested_size,c.req_date,u.user_name from cheque_reqs c,users u,branchs, currency,act_types where req_status='process' and u.user_id=c.user_id and   SUBSTR(c.account_no,3,3)='" + bracode + "' and branchs.branch_code=SUBSTR(c.account_no,3,3) and act_types.act_type_code=SUBSTR(c.account_no,6,5) and  currency.CURR_STS='1' and  currency.curr_code=SUBSTR(c.account_no,11,3) order by c.request_id";
-                query1 = "select users.user_name||' - '||SUBSTR(card_reqs.account_no,14,7) as customer,card_reqs.req_date,card_reqs.req_status,card_reqs.req_reason,card_reqs.name_on_card from card_reqs inner join users on users.user_id = card_reqs.user_id where card_reqs.req_status <> 'process' and SUBSTR(card_reqs.account_no,3,3) = '" + bracode + "'";
+                query1 = "select users.user_name||' - '||SUBSTR(card_reqs.account_no,14,7) as customer,card_reqs.req_date,card_reqs.req_status,card_reqs.req_reason,card_reqs.name_on_card from card_reqs inner join users on users.user_id = card_reqs.user_id where card_reqs.req_status <> 'process' and SUBSTR(card_reqs.account_no,3,3) = :bracode";
             }
             else
             {
@@ -3096,6 +3326,10 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                if (!bracode.Equals("000"))
+                {
+                    cmd.Parameters.Add("bracode", OracleType.VarChar).Value = bracode;
+                }
 
                 con.Open();
 
@@ -3134,9 +3368,10 @@ namespace SIBCPanel.Context
             String Accounts = "";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = " SELECT acc_id,acc_no from user_acc_link where user_id =" + user_id;
+                string query = "SELECT acc_id,acc_no from user_acc_link where user_id = :user_id";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
 
                 con.Open();
 
@@ -3171,9 +3406,11 @@ namespace SIBCPanel.Context
             String Accounts = "";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = " SELECT acc_id,acc_no from user_acc_link where user_id =" + user_id + " and substr(acc_no,14)=" + act;
+                string query = "SELECT acc_id,acc_no from user_acc_link where user_id = :user_id and substr(acc_no,14) = :act";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
+                cmd.Parameters.Add("act", OracleType.VarChar).Value = act;
 
                 con.Open();
 
@@ -3329,13 +3566,13 @@ namespace SIBCPanel.Context
             String acctypename = "NULL";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = " select act_name from act_types where act_type_code=" + acctype;
-                string query2 = "select act_name from invact_types where act_type_code=" + acctype;
-
-
+                string query = "select act_name from act_types where act_type_code = :acctype";
+                string query2 = "select act_name from invact_types where act_type_code = :acctype";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("acctype", OracleType.VarChar).Value = acctype;
                 OracleCommand cmd2 = new OracleCommand(query2, con);
+                cmd2.Parameters.Add("acctype", OracleType.VarChar).Value = acctype;
                 con.Open();
 
 
@@ -3386,9 +3623,10 @@ namespace SIBCPanel.Context
             String brname = "NULL";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select  branch_name_en from branchs where branch_code=" + brcode;
+                string query = "select branch_name_en from branchs where branch_code = :brcode";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("brcode", OracleType.VarChar).Value = brcode;
 
                 con.Open();
 
@@ -3425,9 +3663,10 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select  branch_name||'-'||act_name||'-'|| SUBSTR('" + account+ "',14,11) account_info from users u,branchs,act_types where branchs.branch_code=SUBSTR('" + account + "',3,3) and act_types.act_type_code=SUBSTR('" + account + "',6,5) ";
+                string query = "select branch_name||'-'||act_name||'-'|| SUBSTR(:account,14,11) account_info from users u,branchs,act_types where branchs.branch_code=SUBSTR(:account,3,3) and act_types.act_type_code=SUBSTR(:account,6,5)";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("account", OracleType.VarChar).Value = account;
 
                 con.Open();
                 using (IDataReader dr = cmd.ExecuteReader())
@@ -3457,9 +3696,10 @@ namespace SIBCPanel.Context
             String curr_name = "NULL";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = " select  curr_name from currency where CURR_STS='1' and   curr_code=" + currcode;
+                string query = "select curr_name from currency where CURR_STS='1' and curr_code = :currcode";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("currcode", OracleType.VarChar).Value = currcode;
 
                 con.Open();
 
@@ -3580,10 +3820,11 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "INSERT INTO salary_files (FILE_ID,FILE_NAME,NO_OF_ROWS,STATUS,NO_OF_PROCESS_ROWS,FILE_DATE,USER_ID,FILE_TOTAL) " +
-                               "VALUES(salaryfile.nextval,'" + FILE_NAME + "','0','P','0',sysdate," + user_id + ",'0')";
+                string query = "INSERT INTO salary_files (FILE_ID,FILE_NAME,NO_OF_ROWS,STATUS,NO_OF_PROCESS_ROWS,FILE_DATE,USER_ID,FILE_TOTAL) VALUES(salaryfile.nextval,:file_name,'0','P','0',sysdate,:user_id,'0')";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("file_name", OracleType.VarChar).Value = FILE_NAME;
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
 
                 con.Open();
                 int result = -1;
@@ -3605,10 +3846,14 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "INSERT INTO salary_temp (SALARY_ID,SALARY_USER_ID,SALARY_ACCOUNT_NO,SALARY_AMOUNT,SALARY_STATUS,SALARY_FILE_NAME,SALARY_COMP_ACT,SALARY_PROCESS_DATE,SALARY_REQ_DATE)" +
-                               "VALUES(salarytemp.nextval," + user_id + ",'" + acc + "','" + amount + "','P','" + FILE_NAME + "','" + acccomp + "',sysdate,sysdate)";
+                string query = "INSERT INTO salary_temp (SALARY_ID,SALARY_USER_ID,SALARY_ACCOUNT_NO,SALARY_AMOUNT,SALARY_STATUS,SALARY_FILE_NAME,SALARY_COMP_ACT,SALARY_PROCESS_DATE,SALARY_REQ_DATE) VALUES(salarytemp.nextval,:user_id,:acc,:amount,'P',:file_name,:acccomp,sysdate,sysdate)";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
+                cmd.Parameters.Add("acc", OracleType.VarChar).Value = acc;
+                cmd.Parameters.Add("amount", OracleType.VarChar).Value = amount;
+                cmd.Parameters.Add("file_name", OracleType.VarChar).Value = FILE_NAME;
+                cmd.Parameters.Add("acccomp", OracleType.VarChar).Value = acccomp;
 
                 con.Open();
                 int result = -1;
@@ -3630,9 +3875,13 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update salary_temp  set SALARY_STATUS ='" + sts + "', SALARY_PROCESS_DATE=sysdate where SALARY_USER_ID=" + user_id + " and SALARY_ACCOUNT_NO='" + acc + "' and SALARY_FILE_NAME='" + FILE_NAME + "'";
+                string query = "update salary_temp set SALARY_STATUS = :sts, SALARY_PROCESS_DATE=sysdate where SALARY_USER_ID = :user_id and SALARY_ACCOUNT_NO = :acc and SALARY_FILE_NAME = :file_name";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("sts", OracleType.VarChar).Value = sts;
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
+                cmd.Parameters.Add("acc", OracleType.VarChar).Value = acc;
+                cmd.Parameters.Add("file_name", OracleType.VarChar).Value = FILE_NAME;
 
                 con.Open();
                 int result = -1;
@@ -3663,10 +3912,13 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "update  salary_files  set  NO_OF_ROWS=" + countrow + ",STATUS='RWS',FILE_TOTAL=" + totalamount +
-                               " where FILE_NAME='" + fileName + "' and user_id=" + userId;
+                string query = "update salary_files set NO_OF_ROWS = :countrow, STATUS='RWS', FILE_TOTAL = :totalamount where FILE_NAME = :fileName and user_id = :userId";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("countrow", OracleType.Int32).Value = countrow;
+                cmd.Parameters.Add("totalamount", OracleType.Double).Value = totalamount;
+                cmd.Parameters.Add("fileName", OracleType.VarChar).Value = fileName;
+                cmd.Parameters.Add("userId", OracleType.VarChar).Value = userId;
 
                 con.Open();
                 int result = -1;
@@ -3696,12 +3948,15 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "INSERT INTO trans_log (TRAN_ID,TRAN_REQ,TRAN_RESP,TRAN_REQ_DATE,TRAN_RESP_DATE,TRAN_STATUS,TRAN_RESP_RESULT,USER_ID,TRAN_NAME)" +
-                               "VALUES(tranlog.nextval,'" + req + "','" + resp + "',sysdate,sysdate,'" + status + "','" + respResult + "','" + user_id + "','" + tranName + "')";
-                //string query = "INSERT INTO trans_log (TRAN_ID,TRAN_REQ,TRAN_RESP,TRAN_REQ_DATE,TRAN_RESP_DATE)" +
-                //               "VALUES(tranlog.nextval,'" + req + "','"+ resp +"',sysdate,sysdate,sysdate)";
+                string query = "INSERT INTO trans_log (TRAN_ID,TRAN_REQ,TRAN_RESP,TRAN_REQ_DATE,TRAN_RESP_DATE,TRAN_STATUS,TRAN_RESP_RESULT,USER_ID,TRAN_NAME) VALUES(tranlog.nextval,:req,:resp,sysdate,sysdate,:status,:respResult,:user_id,:tranName)";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("req", OracleType.VarChar).Value = req;
+                cmd.Parameters.Add("resp", OracleType.VarChar).Value = resp;
+                cmd.Parameters.Add("status", OracleType.VarChar).Value = status;
+                cmd.Parameters.Add("respResult", OracleType.VarChar).Value = respResult;
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
+                cmd.Parameters.Add("tranName", OracleType.VarChar).Value = tranName;
 
                 con.Open();
                 int result = -1;
@@ -3720,11 +3975,12 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "INSERT INTO cheque_reqs (REQUEST_ID,ACCOUNT_NO,USER_ID,REQUESTED_SIZE,REQ_DATE,REQ_STATUS,REQ_REASON) " +
-                               "VALUES(cheque_req_seq.nextval,'" + accountNo + "','" + user_id + "','" + size + "',sysdate,'process', '')";
-
+                string query = "INSERT INTO cheque_reqs (REQUEST_ID,ACCOUNT_NO,USER_ID,REQUESTED_SIZE,REQ_DATE,REQ_STATUS,REQ_REASON) VALUES(cheque_req_seq.nextval,:accountNo,:user_id,:size,sysdate,'process','')";
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("accountNo", OracleType.VarChar).Value = accountNo;
+                cmd.Parameters.Add("user_id", OracleType.VarChar).Value = user_id;
+                cmd.Parameters.Add("size", OracleType.VarChar).Value = size;
 
                 con.Open();
                 int result = -1;
@@ -3740,59 +3996,44 @@ namespace SIBCPanel.Context
 
 
 
-        public String custregcheck( String acc_no, String rim)
+        public String custregcheck(String acc_no, String rim)
         {
-            Boolean FLAG;
             String lblconfirm;
-            OracleCommand cmd;
-            OracleDataReader dr;
-            int counter;
-
-            //String query1 = "select count(*) from users_jsb  where DEF_ACC='" + acc_no + "'";
-            String query1 = "select count(*) from users_jsb  where user_rim ='" + rim + "'";
-            String query2 = "select count(*) from user_acc_link_jsb where acc_no='" + acc_no + "'";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(query1, con);
+                OracleCommand cmd = new OracleCommand("select count(*) from users_jsb where user_rim = :rim", con);
+                cmd.Parameters.Add("rim", OracleType.VarChar).Value = rim;
 
                 con.Open();
-
-                dr = cmd.ExecuteReader();
+                OracleDataReader dr = cmd.ExecuteReader();
                 dr.Read();
 
-                counter = Convert.ToInt32(dr[0].ToString());
+                int counter = Convert.ToInt32(dr[0].ToString());
                 dr.Close();
-                con.Close();
-                if ((counter == 0))   
+
+                if (counter == 0)
                 {
-
-                    cmd = new OracleCommand(query2, con);
-
-                    con.Open();
+                    cmd = new OracleCommand("select count(*) from user_acc_link_jsb where acc_no = :acc_no", con);
+                    cmd.Parameters.Add("acc_no", OracleType.VarChar).Value = acc_no;
 
                     dr = cmd.ExecuteReader();
                     dr.Read();
 
                     counter = Convert.ToInt32(dr[0].ToString());
                     dr.Close();
-                    con.Close();
-                    if ((counter != 0))
+                    if (counter != 0)
                     {
                         lblconfirm = "This Account is linked with another user";
-
                         return lblconfirm;
                     }
-                    else
-                    {
-                        lblconfirm = "This Account is available";
-                    }
+
+                    lblconfirm = "This Account is available";
                 }
                 else
                 {
                     lblconfirm = "This Account is Already exist";
                 }
-
             }
             return lblconfirm;
         }
@@ -3915,58 +4156,44 @@ namespace SIBCPanel.Context
 
         public String custregcheckforlinkreg(String acc_no, String rim, string userlog)
         {
-            Boolean FLAG;
             String lblconfirm;
-            OracleCommand cmd;
-            OracleDataReader dr;
-            int counter;
-
-            //String query1 = "select count(*) from users_jsb  where DEF_ACC='" + acc_no + "'";
-            String query1 = "select count(*) from users_jsb  where user_rim ='" + rim + "' and user_log = '" + userlog + "'";
-            String query2 = "select count(*) from user_acc_link_jsb where acc_no='" + acc_no + "'  and user_id = '" + userlog + "'";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(query1, con);
+                OracleCommand cmd = new OracleCommand("select count(*) from users_jsb where user_rim = :rim and user_log = :userlog", con);
+                cmd.Parameters.Add("rim", OracleType.VarChar).Value = rim;
+                cmd.Parameters.Add("userlog", OracleType.VarChar).Value = userlog;
 
                 con.Open();
-
-                dr = cmd.ExecuteReader();
+                OracleDataReader dr = cmd.ExecuteReader();
                 dr.Read();
 
-                counter = Convert.ToInt32(dr[0].ToString());
+                int counter = Convert.ToInt32(dr[0].ToString());
                 dr.Close();
-                con.Close();
-                if ((counter == 0))
+                if (counter == 0)
                 {
-
-                    cmd = new OracleCommand(query2, con);
-
-                    con.Open();
+                    cmd = new OracleCommand("select count(*) from user_acc_link_jsb where acc_no = :acc_no and user_id = :userlog", con);
+                    cmd.Parameters.Add("acc_no", OracleType.VarChar).Value = acc_no;
+                    cmd.Parameters.Add("userlog", OracleType.VarChar).Value = userlog;
 
                     dr = cmd.ExecuteReader();
                     dr.Read();
 
                     counter = Convert.ToInt32(dr[0].ToString());
                     dr.Close();
-                    con.Close();
 
-                    if ((counter != 0))
+                    if (counter != 0)
                     {
                         lblconfirm = "This Account is linked with another user";
-
                         return lblconfirm;
                     }
-                    else
-                    {
-                        lblconfirm = "This Account is available";
-                    }
+
+                    lblconfirm = "This Account is available";
                 }
                 else
                 {
                     lblconfirm = "This user  is already exist";
                 }
-
             }
             return lblconfirm;
         }
@@ -4266,9 +4493,10 @@ namespace SIBCPanel.Context
                 //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_id = '" + int.Parse(idorname) + "'";
                 // string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, SUBSTR(def_acc,6,6) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,12,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name,SUBSTR(def_acc,19,2) as subno, SUBSTR(def_acc,23,3) as subgl from users where user_log = '" + idorname + "' or user_mobile = '" + idorname + "' ";
                 //string query = "select user_name_en , acc_no ,acc_type,acc_curr,acc_branch from users_jsb inner join user_acc_link_jsb on users_jsb.user_log = user_acc_link_jsb.user_id  and user_log = '" + idorname + "'";
-                string query = "select user_name_en , user_log, acc_no ,acc_type,acc_curr,acc_branch from users_jsb inner join user_acc_link_jsb on users_jsb.user_log = user_acc_link_jsb.user_id  and user_log = '" + idorname + "' ";
+                string query = "select user_name_en, user_log, acc_no, acc_type, acc_curr, acc_branch from users_jsb inner join user_acc_link_jsb on users_jsb.user_log = user_acc_link_jsb.user_id and user_log = :idorname";
 
-                OracleCommand cmd = new OracleCommand(query, con);  //SUBSTR(def_acc,12,7)                                                                                                                                                                                                                                     
+                OracleCommand cmd = new OracleCommand(query, con);  //SUBSTR(def_acc,12,7)
+                cmd.Parameters.Add("idorname", OracleType.VarChar).Value = idorname;
                 con.Open();
                 using (IDataReader dataReader = cmd.ExecuteReader())
                 {
@@ -4389,10 +4617,11 @@ namespace SIBCPanel.Context
             //string constr = ConfigurationManager.ConnectionStrings["Constring"].ConnectionString;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select curr_code,curr_name_en from currency where curr_status='A' and curr_code = '" + currency_code + "'";
+                string query = "select curr_code,curr_name_en from currency where curr_status='A' and curr_code = :currency_code";
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
+                    cmd.Parameters.Add("currency_code", OracleType.VarChar).Value = currency_code;
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -4482,10 +4711,11 @@ namespace SIBCPanel.Context
             //string constr = ConfigurationManager.ConnectionStrings["Constring"].ConnectionString;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select TBL_ROLEMASTER.roleid,TBL_ROLEMASTER.name from TBL_ROLEMASTER inner join users_jsb on TBL_ROLEMASTER.ROLEID = users_jsb.roleid where TBL_ROLEMASTER.active='A' and user_log = '" + userid + "' ";
+                string query = "select TBL_ROLEMASTER.roleid,TBL_ROLEMASTER.name from TBL_ROLEMASTER inner join users_jsb on TBL_ROLEMASTER.ROLEID = users_jsb.roleid where TBL_ROLEMASTER.active='A' and user_log = :userid";
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
+                    cmd.Parameters.Add("userid", OracleType.VarChar).Value = userid;
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -4575,10 +4805,11 @@ namespace SIBCPanel.Context
             Boolean result = true;
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select * from users where user_log = '" + CustomerUsername + "'";
+                string query = "select * from users where user_log = :CustomerUsername";
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
+                    cmd.Parameters.Add("CustomerUsername", OracleType.VarChar).Value = CustomerUsername;
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -4598,25 +4829,31 @@ namespace SIBCPanel.Context
         {
             OracleCommand cmd;
             OracleDataReader dr;
-            String query1;
-            string sqladmin = "";
-            string sqldate = "";
+            string query1;
             string sqlinc = "";
-
-            if (admin != "All")
-                sqladmin = " and created_by = '" + admin + "' ";
-            if (fromdate != "All" && fromdate != null)
-                sqldate = " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ";
-
 
             int offset = PageNumber * 500;
             sqlinc = " OFFSET " + offset + "  ROWS FETCH NEXT 500 ROWS ONLY ";
             List<CustomerReportModel> customers = new List<CustomerReportModel>();
-            query1 = "select user_name,user_log,user_email,user_mobile,user_adrs,decode(user_status,'A','Active','U','Authorized','P','Pending','D','Deactive','B','Blocked','DE','Deleted') as status,def_acc,created_by,created_date from users where user_id > 0 " + sqladmin + " " + sqldate + "  " + sqlinc + " ";
+            query1 = "select user_name,user_log,user_email,user_mobile,user_adrs,decode(user_status,'A','Active','U','Authorized','P','Pending','D','Deactive','B','Blocked','DE','Deleted') as status,def_acc,created_by,created_date from users where user_id > 0";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(query1, con);
+                cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (admin != "All")
+                {
+                    query1 += " and created_by = :admin";
+                    cmd.Parameters.Add("admin", OracleType.VarChar).Value = admin;
+                }
+                if (fromdate != "All" && fromdate != null)
+                {
+                    query1 += " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                    cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                    cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                }
+                query1 += " " + sqlinc;
+                cmd.CommandText = query1;
 
                 con.Open();
 
@@ -4647,23 +4884,27 @@ namespace SIBCPanel.Context
         {
             OracleCommand cmd;
             OracleDataReader dr;
-            String query1;
-            string sqladmin = "";
-            string sqldate = "";
-            string sqlinc = "";
-
-            if (admin != "All")
-                sqladmin = " and created_by = '" + admin + "' ";
-            if (fromdate != "All" && fromdate != null)
-                sqldate = " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ";
-
+            string query1;
 
             List<CustomerReportModel> customers = new List<CustomerReportModel>();
-            query1 = "select user_name,user_log,user_email,user_mobile,user_adrs,decode(user_status,'A','Active','U','Authorized','P','Pending','D','Deactive','B','Blocked','DE','Deleted') as status,def_acc,created_by,created_date from users where user_id > 0 " + sqladmin + " " + sqldate + " ";
+            query1 = "select user_name,user_log,user_email,user_mobile,user_adrs,decode(user_status,'A','Active','U','Authorized','P','Pending','D','Deactive','B','Blocked','DE','Deleted') as status,def_acc,created_by,created_date from users where user_id > 0";
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(query1, con);
+                cmd = new OracleCommand();
+                cmd.Connection = con;
+                if (admin != "All")
+                {
+                    query1 += " and created_by = :admin";
+                    cmd.Parameters.Add("admin", OracleType.VarChar).Value = admin;
+                }
+                if (fromdate != "All" && fromdate != null)
+                {
+                    query1 += " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date(:fromdate,'mm/dd/yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date(:todate,'mm/dd/yyyy')";
+                    cmd.Parameters.Add("fromdate", OracleType.VarChar).Value = fromdate;
+                    cmd.Parameters.Add("todate", OracleType.VarChar).Value = todate;
+                }
+                cmd.CommandText = query1;
 
                 con.Open();
 
@@ -4775,7 +5016,7 @@ namespace SIBCPanel.Context
 
             if (bracode != "000")
             {
-                query1 = "select users.user_id,users.user_name,SUBSTR(def_acc,3,11) from users inner join security_master on created_by = security_master.user_log where user_status = 'P' and security_master.user_branch = '" + bracode + "'";
+                query1 = "select users.user_id,users.user_name,SUBSTR(def_acc,3,11) from users inner join security_master on created_by = security_master.user_log where user_status = 'P' and security_master.user_branch = :bracode";
             }
             else
             {
@@ -4786,6 +5027,10 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd = new OracleCommand(query1, con);
+                if (bracode != "000")
+                {
+                    cmd.Parameters.Add("bracode", OracleType.VarChar).Value = bracode;
+                }
 
                 con.Open();
 
@@ -4879,10 +5124,11 @@ namespace SIBCPanel.Context
             String brname = "";
             String acctype = "";
             String roleid = "", profilename = "";
-            query1 = "select *  from users_jsb where user_id='" + userid + "'";
+            query1 = "select * from users_jsb where user_id = :userid";
             using (OracleConnection con = new OracleConnection(conString))
             {
                 cmd3 = new OracleCommand(query1, con);
+                cmd3.Parameters.Add("userid", OracleType.VarChar).Value = userid;
 
                 con.Open();
 
@@ -4908,7 +5154,8 @@ namespace SIBCPanel.Context
                     Sessioncurr = acc.Substring(10, 3);
                     acc_no = acc.Substring(13);
 
-                    cmd4 = new OracleCommand(("select BRANCH_NAME from BRANCHS where BRANCH_CODE_NO='" + br + "'"), con);
+                    cmd4 = new OracleCommand("select BRANCH_NAME from BRANCHS where BRANCH_CODE_NO = :br", con);
+                    cmd4.Parameters.Add("br", OracleType.VarChar).Value = br;
                     dr4 = cmd4.ExecuteReader();
                     if (dr4.Read())
                     {
@@ -4926,7 +5173,8 @@ namespace SIBCPanel.Context
                     //}
 
                     //dr5.Close();
-                    cmd5 = new OracleCommand(("select act_name from act_types where act_type_code ='" + (acc_type + "'")), con);
+                    cmd5 = new OracleCommand("select act_name from act_types where act_type_code = :acc_type", con);
+                    cmd5.Parameters.Add("acc_type", OracleType.VarChar).Value = acc_type;
                     dr5 = cmd5.ExecuteReader();
                     if (dr5.HasRows)
                     {
@@ -4936,7 +5184,8 @@ namespace SIBCPanel.Context
                     }
                     else
                     {
-                        cmd5 = new OracleCommand(("select act_name from act_types where act_type_code='" + (acc_type + "'")), con);
+                        cmd5 = new OracleCommand("select act_name from act_types where act_type_code = :acc_type", con);
+                        cmd5.Parameters.Add("acc_type", OracleType.VarChar).Value = acc_type;
                         dr5 = cmd5.ExecuteReader();
                         if (dr5.HasRows)
                         {
@@ -4950,7 +5199,8 @@ namespace SIBCPanel.Context
                     }
 
                     dr5.Close();
-                    cmd2 = new OracleCommand(("select name  from tbl_rolemaster where roleid='" + roleid + "'  "), con);
+                    cmd2 = new OracleCommand("select name from tbl_rolemaster where roleid = :roleid", con);
+                    cmd2.Parameters.Add("roleid", OracleType.VarChar).Value = roleid;
                     dr2 = cmd2.ExecuteReader();
                     if (dr2.Read())
                     {
@@ -4960,7 +5210,8 @@ namespace SIBCPanel.Context
 
 
                     dr2.Close();
-                    cmd6 = new OracleCommand(("select CURR_NAME from CURRENCY where CURR_STS='1' and  CURR_CODE = '" + Sessioncurr + "'"), con);
+                    cmd6 = new OracleCommand("select CURR_NAME from CURRENCY where CURR_STS='1' and CURR_CODE = :Sessioncurr", con);
+                    cmd6.Parameters.Add("Sessioncurr", OracleType.VarChar).Value = Sessioncurr;
                     dr6 = cmd6.ExecuteReader();
                     if (dr6.Read())
                     {
@@ -5027,7 +5278,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select  act_type_code,act_name,act_name_ar,act_type_id from act_types where act_type_code = " + account_type_code, con);
+                OracleCommand cmd = new OracleCommand("select act_type_code,act_name,act_name_ar,act_type_id from act_types where act_type_code = :account_type_code", con);
+                cmd.Parameters.Add("account_type_code", OracleType.VarChar).Value = account_type_code;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -5054,7 +5306,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select  branch_code,branch_name,branch_sts,branch_code_no,branch_db_link,branch_name_ar from branchs where branch_code = " + branch_code, con);
+                OracleCommand cmd = new OracleCommand("select branch_code,branch_name,branch_sts,branch_code_no,branch_db_link,branch_name_ar from branchs where branch_code = :branch_code", con);
+                cmd.Parameters.Add("branch_code", OracleType.VarChar).Value = branch_code;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -5081,7 +5334,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("delete from act_types where act_type_code = '" + account_type_code + "'", con);
+                OracleCommand cmd = new OracleCommand("delete from act_types where act_type_code = :account_type_code", con);
+                cmd.Parameters.Add("account_type_code", OracleType.VarChar).Value = account_type_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -5094,7 +5348,11 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update act_types set act_name = '" + model.account_type + "',act_name_ar = '" + model.account_type_arabic + "' ,act_type_id = '" + model.account_type_no + "' where act_type_code ='" + model.account_type_code + "'", con);
+                OracleCommand cmd = new OracleCommand("Update act_types set act_name = :account_type, act_name_ar = :account_type_arabic, act_type_id = :account_type_no where act_type_code = :account_type_code", con);
+                cmd.Parameters.Add("account_type", OracleType.VarChar).Value = model.account_type;
+                cmd.Parameters.Add("account_type_arabic", OracleType.VarChar).Value = model.account_type_arabic;
+                cmd.Parameters.Add("account_type_no", OracleType.VarChar).Value = model.account_type_no;
+                cmd.Parameters.Add("account_type_code", OracleType.VarChar).Value = model.account_type_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -5137,7 +5395,8 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select  curr_code,curr_name,curr_sumry,curr_sts from currency where curr_code = " + currency_code, con);
+                OracleCommand cmd = new OracleCommand("select curr_code,curr_name,curr_sumry,curr_sts from currency where curr_code = :currency_code", con);
+                cmd.Parameters.Add("currency_code", OracleType.VarChar).Value = currency_code;
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
 
@@ -5162,7 +5421,8 @@ namespace SIBCPanel.Context
         {
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("delete from currency where curr_code = '" + currency_code + "'", con);
+                OracleCommand cmd = new OracleCommand("delete from currency where curr_code = :currency_code", con);
+                cmd.Parameters.Add("currency_code", OracleType.VarChar).Value = currency_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -5175,7 +5435,11 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update currency set curr_name = '" + model.currency_name + "',curr_sumry = '" + model.currency_summary + "' ,curr_sts = '" + model.currency_status + "' where curr_code ='" + model.currency_code + "'", con);
+                OracleCommand cmd = new OracleCommand("Update currency set curr_name = :currency_name, curr_sumry = :currency_summary, curr_sts = :currency_status where curr_code = :currency_code", con);
+                cmd.Parameters.Add("currency_name", OracleType.VarChar).Value = model.currency_name;
+                cmd.Parameters.Add("currency_summary", OracleType.VarChar).Value = model.currency_summary;
+                cmd.Parameters.Add("currency_status", OracleType.VarChar).Value = model.currency_status;
+                cmd.Parameters.Add("currency_code", OracleType.VarChar).Value = model.currency_code;
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -5268,34 +5532,34 @@ namespace SIBCPanel.Context
         public Loginmodelresult checkuserlogin(String usrname, String password, String UserHostAddress)
         {
             Loginmodelresult model = new Loginmodelresult();
-            string encpass;
-
-            encpass = Encrypt(password);
-            OracleCommand cmd;
-            OracleDataReader dr;
-            string Sqlstr;
-            Sqlstr = "Select user_id,user_name,user_branch, user_last_login,roleid,user_status from jsb_security_master where user_LOG= '"
-                        + usrname + "' and user_pwd = '" + encpass + "' and user_status = 'A' ";
+            string encpass = Encrypt(password);
             model.Login = false;
+
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(Sqlstr, con);
+                // WAPT01-01: Parameterized login query — no string concatenation
+                OracleCommand cmd = new OracleCommand(
+                    "SELECT user_id, user_name, user_branch, user_last_login, roleid, user_status " +
+                    "FROM jsb_security_master " +
+                    "WHERE user_LOG = :usrname AND user_pwd = :encpass AND user_status = 'A'", con);
+                cmd.Parameters.Add("usrname", OracleType.VarChar).Value = usrname;
+                cmd.Parameters.Add("encpass", OracleType.VarChar).Value = encpass;
+
                 try
                 {
                     con.Open();
-                    dr = cmd.ExecuteReader();
-                    OracleCommand cmd2;
-                    OracleCommand cmd3;
+                    OracleDataReader dr = cmd.ExecuteReader();
 
                     if (dr.HasRows)
                     {
                         while (dr.Read())
                         {
-
-                            cmd2 = new OracleCommand(("insert into Users_login values('"
-                                            + (UserHostAddress + ("','"
-                                            + (DateTime.Today.ToString() + ("','"
-                                            + (usrname + "','-', 'S')")))))), con);
+                            // WAPT01-01: Parameterized success audit log insert
+                            OracleCommand cmd2 = new OracleCommand(
+                                "INSERT INTO Users_login VALUES (:ip, :logindate, :uname, '-', 'S')", con);
+                            cmd2.Parameters.Add("ip", OracleType.VarChar).Value = UserHostAddress;
+                            cmd2.Parameters.Add("logindate", OracleType.VarChar).Value = DateTime.Today.ToString();
+                            cmd2.Parameters.Add("uname", OracleType.VarChar).Value = usrname;
                             cmd2.ExecuteNonQuery();
 
                             model.UserId = dr[0].ToString();
@@ -5304,29 +5568,15 @@ namespace SIBCPanel.Context
                             model.user_last_login = dr[3].ToString();
                             model.user_roleid = dr[4].ToString();
                             model.status = dr[5].ToString();
-                        
-
-                            //if (model.status == "D")
-                            //{
-                            //    model.lblconfirm = "Your account has been deactivated by admins.";
-                            //    break;
-                            //}
-
                             model.user_log = usrname;
                             model.Login = true;
 
-
-
-
-
-                            if ((model.user_last_login == "T"))  //F
+                            if (model.user_last_login == "T")
                             {
-                                //cmd3 = new OracleCommand(("update jsb_SECURITY_MASTER set  user_pas ='',user_last_login='T' where user_id='"
-                                //                + (model.UserId + "' ")), con); // user_pwd ='',
-
-                                cmd3 = new OracleCommand(("update jsb_SECURITY_MASTER set user_last_login='F' where user_id='"
-                                          + (model.UserId + "' ")), con);
-
+                                // WAPT01-01: Parameterized first-login update
+                                OracleCommand cmd3 = new OracleCommand(
+                                    "UPDATE jsb_SECURITY_MASTER SET user_last_login = 'F' WHERE user_id = :userId", con);
+                                cmd3.Parameters.Add("userId", OracleType.VarChar).Value = model.UserId;
                                 cmd3.ExecuteNonQuery();
                                 model.lblconfirm = "change_pass";
                             }
@@ -5338,19 +5588,19 @@ namespace SIBCPanel.Context
                     }
                     else
                     {
-                        model.lblconfirm = "There is wrong into username or password";
-                        cmd2 = new OracleCommand(("insert into Users_login values('"
-                                        + (UserHostAddress + ("','"
-                                        + (DateTime.Today.ToString() + ("','"
-                                        + (usrname + "','-', 'F')")))))), con);
+                        // WAPT01-01: Parameterized failed login audit log insert
+                        OracleCommand cmd2 = new OracleCommand(
+                            "INSERT INTO Users_login VALUES (:ip, :logindate, :uname, '-', 'F')", con);
+                        cmd2.Parameters.Add("ip", OracleType.VarChar).Value = UserHostAddress;
+                        cmd2.Parameters.Add("logindate", OracleType.VarChar).Value = DateTime.Today.ToString();
+                        cmd2.Parameters.Add("uname", OracleType.VarChar).Value = usrname;
                         cmd2.ExecuteNonQuery();
                         model.lblconfirm = "Wrong input username or password";
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    model.lblconfirm = "System Error" + ex;
+                    model.lblconfirm = "System Error";
                 }
             }
             return model;
@@ -5456,7 +5706,11 @@ namespace SIBCPanel.Context
             {
                 // OracleCommand cmd = new OracleCommand("update limits set trans_count = '" + newlimits.Transaction_per_day + "', trans_amount = '" + newlimits.Transaction_amount + "', trans_accumulative = '" + newlimits.Transactions_accumulation + "' , service_name = '" + newlimits.service_name + "' , fees = '" + newlimits.Fees + "' , tax = '" + newlimits.Tax + "' , flag = '" + newlimits.flag + "' where serviceid = " + newlimits.serviceid + " ", con);
                 //OracleCommand cmd = new OracleCommand("update limits set trans_count = '" + newlimits.Transaction_per_day + "', trans_amount = '" + newlimits.Transaction_amount + "', trans_accumulative = '" + newlimits.Transactions_accumulation + "'  , fees = '" + newlimits.Fees + "' , tax = '" + newlimits.Tax + "' , flag = '" + newlimits.flag + "'  where   service_name = '" + newlimits.service_name + "' ", con);
-                OracleCommand cmd = new OracleCommand("update jsb_limit_models set LIMIT_MODEL_NO_PER_DAY = '" + newlimits.Transaction_per_day + "', LIMIT_MODEL_AMOUNT_PER_TRAN = '" + newlimits.Transaction_amount + "', LIMIT_MODEL_AMOUNT_PER_DAY = '" + newlimits.Transactions_accumulation + "'  where LIMIT_MODEL_NAME = '" + newlimits.service_name + "' ", con);
+                OracleCommand cmd = new OracleCommand("update jsb_limit_models set LIMIT_MODEL_NO_PER_DAY = :Transaction_per_day, LIMIT_MODEL_AMOUNT_PER_TRAN = :Transaction_amount, LIMIT_MODEL_AMOUNT_PER_DAY = :Transactions_accumulation where LIMIT_MODEL_NAME = :service_name", con);
+                cmd.Parameters.Add("Transaction_per_day", OracleType.VarChar).Value = newlimits.Transaction_per_day.ToString();
+                cmd.Parameters.Add("Transaction_amount", OracleType.VarChar).Value = newlimits.Transaction_amount.ToString();
+                cmd.Parameters.Add("Transactions_accumulation", OracleType.VarChar).Value = newlimits.Transactions_accumulation.ToString();
+                cmd.Parameters.Add("service_name", OracleType.VarChar).Value = newlimits.service_name;
 
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
@@ -5707,53 +5961,50 @@ namespace SIBCPanel.Context
             return lblconfirm;
         }
 
-        public String addnewacountforFrist(String userlog, String Account_No, String Account_Type_Code, String Branch_Code, String Currency_Code, String IBAN ,Boolean  acc_prim)
+        public String addnewacountforFrist(String userlog, String Account_No, String Account_Type_Code, String Branch_Code, String Currency_Code, String IBAN, Boolean acc_prim)
         {
-            String lblconfirm = "System Error", user_id = null;
-            bool FLAG;
-            OracleCommand cmd,cmd2 , cmd_acc_lnk;
-            OracleDataReader dr;
+            String lblconfirm = "System Error";
             string acc_app_type = "";
-          
+
             using (OracleConnection con = new OracleConnection(conString))
-             
             {
-                
-                    try
+                try
                 {
                     if (Account_Type_Code.Equals("SAV"))
                     {
-                         acc_app_type = "SV";
+                        acc_app_type = "SV";
                     }
                     else
                     {
-
-                         acc_app_type = "CK";
-                        
+                        acc_app_type = "CK";
                     }
 
+                    String sql2 = "select nvl(max(acc_id),0) from user_acc_link_jsb";
+                    OracleCommand cmd2 = new OracleCommand(sql2, con);
+                    con.Open();
+                    OracleDataReader dr = cmd2.ExecuteReader();
+                    dr.Read();
+                    int ACC_ID = Convert.ToInt32(dr[0].ToString()) + 1;
+                    dr.Close();
+                    cmd2.Dispose();
 
-                            String sql2 = "select  nvl(max (acc_id),0) from user_acc_link_jsb";
-                            cmd2 = new OracleCommand(sql2, con);
-                          con.Open();
-                          dr = cmd2.ExecuteReader();
-                            dr.Read();
-                            int ACC_ID;
-                            ACC_ID = Convert.ToInt32(dr[0].ToString());
-                            dr.Close();
-                            cmd2.Dispose();
-                            ACC_ID = ACC_ID + 1;
-                            cmd_acc_lnk = new OracleCommand("INSERT INTO user_acc_link_jsb (user_id,acc_no,acc_sts,acc_type,acc_app_type,acc_curr,acc_branch,acc_primary,acc_status,acc_id,iban) values ('"
-                                             + userlog + "','" + Account_No + "',NULL,'" + Account_Type_Code + "','" + acc_app_type + "','" + Currency_Code + "','" + Branch_Code + "','"+acc_prim+"','A','" + ACC_ID + "', '" + IBAN + "')", con);
-                            cmd_acc_lnk.ExecuteNonQuery();
-                            lblconfirm = "Account Added Successfully";
-                        
-                        
-                        con.Close();
-                    }
+                    OracleCommand cmd_acc_lnk = new OracleCommand(
+                        "INSERT INTO user_acc_link_jsb (user_id,acc_no,acc_sts,acc_type,acc_app_type,acc_curr,acc_branch,acc_primary,acc_status,acc_id,iban) " +
+                        "VALUES (:userlog,:accountNo,NULL,:accountType,:accAppType,:currencyCode,:branchCode,:accPrimary,'A',:accId,:iban)", con);
+                    cmd_acc_lnk.Parameters.Add("userlog", OracleType.VarChar).Value = userlog;
+                    cmd_acc_lnk.Parameters.Add("accountNo", OracleType.VarChar).Value = Account_No;
+                    cmd_acc_lnk.Parameters.Add("accountType", OracleType.VarChar).Value = Account_Type_Code;
+                    cmd_acc_lnk.Parameters.Add("accAppType", OracleType.VarChar).Value = acc_app_type;
+                    cmd_acc_lnk.Parameters.Add("currencyCode", OracleType.VarChar).Value = Currency_Code;
+                    cmd_acc_lnk.Parameters.Add("branchCode", OracleType.VarChar).Value = Branch_Code;
+                    cmd_acc_lnk.Parameters.Add("accPrimary", OracleType.VarChar).Value = acc_prim ? "True" : "False";
+                    cmd_acc_lnk.Parameters.Add("accId", OracleType.Int32).Value = ACC_ID;
+                    cmd_acc_lnk.Parameters.Add("iban", OracleType.VarChar).Value = IBAN;
+                    cmd_acc_lnk.ExecuteNonQuery();
 
-
-                
+                    lblconfirm = "Account Added Successfully";
+                    con.Close();
+                }
                 catch (Exception ex)
                 {
                     lblconfirm = "System Error : " + ex.Message;
@@ -5769,7 +6020,9 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 con.Open();
-                cmd = new OracleCommand("select count(*) from user_acc_link where acc_no='" + accountnumber + "' and user_id='" + userid + "'", con);
+                cmd = new OracleCommand("select count(*) from user_acc_link where acc_no = :accountnumber and user_id = :userid", con);
+                cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+                cmd.Parameters.Add("userid", OracleType.VarChar).Value = userid;
                 dr = cmd.ExecuteReader();
                 dr.Read();
                 int counter;
@@ -5789,63 +6042,59 @@ namespace SIBCPanel.Context
         public string checkuser(string accountnumber)
         {
             string user = null;
-            OracleCommand cmd;
-            OracleDataReader dr;
             using (OracleConnection con = new OracleConnection(conString))
             {
                 con.Open();
-                cmd = new OracleCommand("select user_log from users_jsb where def_acc='" + accountnumber + "'", con);
-                dr = cmd.ExecuteReader();
+                OracleCommand cmd = new OracleCommand("select user_log from users_jsb where def_acc = :accountnumber", con);
+                cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+
+                OracleDataReader dr = cmd.ExecuteReader();
                 dr.Read();
-              
+
                 if (dr.HasRows)
                 {
                     user = dr[0].ToString();
                 }
-                con.Close();
+
                 dr.Close();
-               
+                con.Close();
             }
             return user;
-            
         }
 
 
-        public string checkuserforcorp(string accountnumber , string cat)
+        public string checkuserforcorp(string accountnumber, string cat)
         {
-
-            string cato = "";
-            if (cat == "2")
-            {
-                cato = "and user_log like  '%O%'";
-
-            }
-
-            if (cat == "3")
-            {
-                cato = "and user_log like  '%A%'";
-
-            }
             string user = null;
-            OracleCommand cmd;
-            OracleDataReader dr;
             using (OracleConnection con = new OracleConnection(conString))
             {
                 con.Open();
-                cmd = new OracleCommand("select user_log from users_jsb where def_acc='" + accountnumber + "' "+cato+" ", con);
-                dr = cmd.ExecuteReader();
+
+                string query = "select user_log from users_jsb where def_acc = :accountnumber";
+                if (cat == "2")
+                {
+                    query += " and user_log like '%O%'";
+                }
+                else if (cat == "3")
+                {
+                    query += " and user_log like '%A%'";
+                }
+
+                OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+
+                OracleDataReader dr = cmd.ExecuteReader();
                 dr.Read();
 
                 if (dr.HasRows)
                 {
                     user = dr[0].ToString();
                 }
-                con.Close();
-                dr.Close();
 
+                dr.Close();
+                con.Close();
             }
             return user;
-
         }
 
 
@@ -5857,7 +6106,8 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 con.Open();
-                cmd = new OracleCommand("select user_log from users_jsb where user_rim='" + accountnumber + "'", con);
+                cmd = new OracleCommand("select user_log from users_jsb where user_rim = :accountnumber", con);
+                cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
                 dr = cmd.ExecuteReader();
                 dr.Read();
 
@@ -5895,7 +6145,17 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 con.Open();
-                cmd = new OracleCommand("select user_log from users_jsb where user_rim='" + accountnumber + "' " + cato + " ", con);
+                string query = "select user_log from users_jsb where user_rim = :accountnumber";
+                if (cat == "2")
+                {
+                    query += " and user_log like '%O%'";
+                }
+                if (cat == "3")
+                {
+                    query += " and user_log like '%A%'";
+                }
+                cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
                 dr = cmd.ExecuteReader();
                 dr.Read();
 
@@ -6239,33 +6499,24 @@ namespace SIBCPanel.Context
 
         public String resetpassword(String user_log)
         {
-
-            
-           
             string lblconfirm = "System Error", pass = "";
-            OracleCommand cmd;
-            OracleDataReader dr;
-            String Sqlstr;
-           
-         
+
             using (OracleConnection con = new OracleConnection(conString))
             {
-
                 try
                 {
-                  
                     con.Open();
-                    Sqlstr = "select otp_pwd from users_jsb where user_log ='" + user_log + "'";
-                    cmd = new OracleCommand(Sqlstr, con);
-                    dr = cmd.ExecuteReader();
+
+                    // WAPT01-05: Parameterized — no string concatenation
+                    OracleCommand cmd = new OracleCommand(
+                        "SELECT otp_pwd FROM users_jsb WHERE user_log = :user_log", con);
+                    cmd.Parameters.Add("user_log", OracleType.VarChar).Value = user_log;
+
+                    OracleDataReader dr = cmd.ExecuteReader();
                     if (dr.Read())
                     {
-
                         pass = dr[0].ToString();
-                       
                         lblconfirm = "Successfully";
-
-
                     }
                     else
                     {
@@ -6278,7 +6529,7 @@ namespace SIBCPanel.Context
                     lblconfirm = "System Error";
                     pass = "0";
                 }
-               
+
                 return pass;
             }
         }
@@ -6676,17 +6927,18 @@ namespace SIBCPanel.Context
             return result;
         }
 
-        public Boolean checkaccountuser(string type, string accountnumber , string userlog)
+        public Boolean checkaccountuser(string type, string accountnumber, string userlog)
         {
             Boolean result = false;
-            String count = "NULL";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select * from user_acc_link_jsb where acc_type = '" + type + "' and acc_no = '" + accountnumber + "' and user_id = '" + userlog + "' ";
-               
-                using (OracleCommand cmd = new OracleCommand(query))
+                using (OracleCommand cmd = new OracleCommand("select * from user_acc_link_jsb where acc_type = :type and acc_no = :accountnumber and user_id = :userlog"))
                 {
                     cmd.Connection = con;
+                    cmd.Parameters.Add("type", OracleType.VarChar).Value = type;
+                    cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+                    cmd.Parameters.Add("userlog", OracleType.VarChar).Value = userlog;
+
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -6694,36 +6946,24 @@ namespace SIBCPanel.Context
                         {
                             result = true;
                         }
-                        //while (sdr.Read())
-                        //{
-
-
-
-                        //    if (sdr["count(*)"] != DBNull.Value)
-                        //    {
-                        //        result = true;
-                        //        //count = sdr["count(*)"].ToString();
-                        //    }
-
-                        //}
                     }
-                    
                 }
             }
             return result;
         }
 
-        public Boolean checkaccountuserforcorp(string type, string accountnumber , string userlog)
+        public Boolean checkaccountuserforcorp(string type, string accountnumber, string userlog)
         {
             Boolean result = false;
-            String count = "NULL";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select * from user_acc_link_jsb where acc_type = '" + type + "' and acc_no = '" + accountnumber + "'  and user_id = '"+userlog+"'";
-
-                using (OracleCommand cmd = new OracleCommand(query))
+                using (OracleCommand cmd = new OracleCommand("select * from user_acc_link_jsb where acc_type = :type and acc_no = :accountnumber and user_id = :userlog"))
                 {
                     cmd.Connection = con;
+                    cmd.Parameters.Add("type", OracleType.VarChar).Value = type;
+                    cmd.Parameters.Add("accountnumber", OracleType.VarChar).Value = accountnumber;
+                    cmd.Parameters.Add("userlog", OracleType.VarChar).Value = userlog;
+
                     con.Open();
                     using (OracleDataReader sdr = cmd.ExecuteReader())
                     {
@@ -6731,20 +6971,7 @@ namespace SIBCPanel.Context
                         {
                             result = true;
                         }
-                        //while (sdr.Read())
-                        //{
-
-
-
-                        //    if (sdr["count(*)"] != DBNull.Value)
-                        //    {
-                        //        result = true;
-                        //        //count = sdr["count(*)"].ToString();
-                        //    }
-
-                        //}
                     }
-
                 }
             }
             return result;
@@ -6809,19 +7036,12 @@ namespace SIBCPanel.Context
             //{
             using (OracleConnection con = new OracleConnection(conString))
             {
-                //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_id = '" + int.Parse(idorname) + "'";
-                string query = "select user_name_en,def_acc as account_number , user_status from users_jsb where user_log = '" + idorname + "'";
+                // WAPT01-05: Parameterized — no string concatenation
+                OracleCommand cmd = new OracleCommand(
+                    "SELECT user_name_en, def_acc AS account_number, user_status FROM users_jsb WHERE user_log = :idorname", con);
+                cmd.Parameters.Add("idorname", OracleType.VarChar).Value = idorname;
 
-                OracleCommand cmd = new OracleCommand(query, con);
-                //if(con.Close())
-                //{
-                //    con.Open();
-                //}
-                //con.Open();
-
-                //cmd.Connection = con;
-
-               con.Open();
+                con.Open();
 
                 using (IDataReader dataReader = cmd.ExecuteReader())
                 {
@@ -7934,95 +8154,59 @@ namespace SIBCPanel.Context
             string AccNo = "";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select def_acc from users_jsb where user_rim = " + AccountNumber;
-
-                OracleCommand cmd = new OracleCommand(query, con);
+                OracleCommand cmd = new OracleCommand("select def_acc from users_jsb where user_rim = :accountNumber", con);
+                cmd.Parameters.Add("accountNumber", OracleType.VarChar).Value = AccountNumber;
 
                 con.Open();
-
-
                 using (IDataReader dataReader = cmd.ExecuteReader())
                 {
                     while (dataReader.Read())
                     {
-
                         if (dataReader["def_acc"] != DBNull.Value)
                         {
-
                             AccNo = dataReader["def_acc"].ToString();
-
                         }
                     }
-                    //Accounts = Accounts.Substring(1);
                     return AccNo;
-
                 }
-
             }
-
         }
 
 
-        public List<CustomerRegBankinfo> getCustNoFromRimCorp(string AccountNumber , string cat)
+        public List<CustomerRegBankinfo> getCustNoFromRimCorp(string AccountNumber, string cat)
         {
-
             List<CustomerRegBankinfo> info = new List<CustomerRegBankinfo>();
-            string AccNo = "";
-            string cato = "";
-            if(cat == "2")
-            {
-                cato = "and user_log like  '%O%'";
-
-            }
-
-            if (cat == "3")
-            {
-                cato = "and user_log like  '%A%'";
-
-            }
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select def_acc , user_log from users_jsb where user_rim =  '"+AccountNumber+"'  "+cato+"  ";
+                string query = "select def_acc, user_log from users_jsb where user_rim = :accountNumber";
+                if (cat == "2")
+                {
+                    query += " and user_log like '%O%'";
+                }
+                else if (cat == "3")
+                {
+                    query += " and user_log like '%A%'";
+                }
 
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("accountNumber", OracleType.VarChar).Value = AccountNumber;
 
                 con.Open();
-
                 OracleDataReader dataReader = cmd.ExecuteReader();
 
-                //using (IDataReader dataReader = cmd.ExecuteReader())
-                //{
-                    if (dataReader.HasRows)
-                    {
-
-
+                if (dataReader.HasRows)
+                {
                     while (dataReader.Read())
                     {
-
-
                         info.Add(new CustomerRegBankinfo
                         {
-                           
-
                             AccountNumberAdded = dataReader[0].ToString(),
-                        CustomerID = dataReader[1].ToString(),
-
-
-                    });
+                            CustomerID = dataReader[1].ToString(),
+                        });
                     }
-                    //if (dataReader["def_acc"] != DBNull.Value)
-                    //{
-
-                    //model.AccountNumberAdded = dataReader["def_acc"].ToString();
-                           // model.CustomerID = dataReader["user_log"].ToString();
-
-                       // }
-                    }
-                    //Accounts = Accounts.Substring(1);
-                    return info;
-
-                //}
+                }
+                return info;
 
             }
 
@@ -8478,14 +8662,14 @@ namespace SIBCPanel.Context
             CustomerRegBankinfo usermodel = new CustomerRegBankinfo();
             if (idorname != null)
             {
-                //char[] chararray = idorname.ToCharArray();
-                //if (char.IsDigit(chararray[0]) && idorname.Length == 12)
-                //{
                 using (OracleConnection con = new OracleConnection(conString))
                 {
-                    string query = "select user_name_en,def_acc as account_number , user_type , user_status from users_jsb where user_log = '" + idorname + "'";
+                    // WAPT01-02: Parameterized — no string concatenation
+                    OracleCommand cmd = new OracleCommand(
+                        "SELECT user_name_en, def_acc AS account_number, user_type, user_status " +
+                        "FROM users_jsb WHERE user_log = :idorname", con);
+                    cmd.Parameters.Add("idorname", OracleType.VarChar).Value = idorname;
 
-                    OracleCommand cmd = new OracleCommand(query, con);
                     con.Open();
                     using (IDataReader dataReader = cmd.ExecuteReader())
                     {
@@ -8935,8 +9119,9 @@ namespace SIBCPanel.Context
             UserDetailsModel usermodel = new UserDetailsModel();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select * from users where user_log = '" + IdOrName + "'";
+                string query = "select * from users where user_log = :IdOrName";
                 OracleCommand cmd = new OracleCommand(query, con);
+                cmd.Parameters.Add("IdOrName", OracleType.VarChar).Value = IdOrName;
                 con.Open();
                 using (IDataReader dataReader = cmd.ExecuteReader())
                 {

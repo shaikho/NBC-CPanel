@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -10,6 +11,7 @@ using Newtonsoft.Json;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class CustomerRegistrationController : Controller
     {
         DataSource ds = new DataSource();

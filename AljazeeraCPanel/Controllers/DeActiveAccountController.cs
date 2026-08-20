@@ -5,12 +5,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using Newtonsoft.Json.Linq;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class DeActiveAccountController : Controller
     {
         //

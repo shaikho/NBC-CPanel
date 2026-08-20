@@ -1,6 +1,7 @@
 ﻿using FCBCPanel.Models;
 using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using AljazeeraCPanel.Repository;
 using SIBCPanel.Context;
@@ -10,6 +11,7 @@ using System.Web.Mvc;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class HomeController : Controller
     {
         DataSource ds = new DataSource();
@@ -18,20 +20,6 @@ namespace AljazeeraCPanel.Controllers
 
         public ActionResult Index()
         {
-
-
-            if (Session["user_name"] == null)
-            {
-                return RedirectToAction("Login", "Login");
-            }
-            if (Session["user_branch"] == null)
-            {
-                return RedirectToAction("Login", "Login");
-            }
-            if ((Session["cpanelLogin"] == null) || !Session["cpanelLogin"].ToString().Equals("true"))
-            {
-                return RedirectToAction("Login", "Login");
-            }
             if (Session["Homemessage"] != null)
             {
                 ViewBag.SuccessMessage = Session["Homemessage"].ToString();

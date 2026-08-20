@@ -1,4 +1,5 @@
 ﻿using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using iTextSharp.text;
 using Newtonsoft.Json.Linq;
@@ -12,6 +13,7 @@ using System.Web.Mvc;
 
 namespace AljazeeraCPanel.Controllers
 {
+    [AuthorizeSession]
     public class CPanelProfileManagementController : Controller
     {
 

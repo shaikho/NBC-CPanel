@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
+using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using SIBCPanel.Context;
 using System;
@@ -12,6 +13,7 @@ using System.Web.Services.Description;
 
 namespace SFBSPancel.Controllers
 {
+    [AuthorizeSession]
     public class AddAccountController : Controller
     {
         DataSource ds = new DataSource();
