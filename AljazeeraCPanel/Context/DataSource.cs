@@ -1,4 +1,4 @@
-﻿using AljazeeraCPanel;
+﻿﻿using AljazeeraCPanel;
 using AljazeeraCPanel.Models;
 using cpanel.Models;
 using FCBCPanel.Models;
@@ -2911,7 +2911,8 @@ namespace SIBCPanel.Context
         {
             string p = CreatePassword(8);
 
-            string enc_pwd = Encrypt(p);
+            // WAPT11: store a one-way hash rather than reversible ciphertext.
+            string enc_pwd = AljazeeraCPanel.Security.PasswordHasher.Hash(p);
             using (OracleConnection con = new OracleConnection(conString))
             {
                 OracleCommand cmd = new OracleCommand("Update jsb_security_master set USER_LAST_LOGIN='F', USER_STATUS='A', USER_PWD=:enc_pwd where user_id=:user_id", con);
@@ -5532,35 +5533,42 @@ namespace SIBCPanel.Context
         public Loginmodelresult checkuserlogin(String usrname, String password, String UserHostAddress)
         {
             Loginmodelresult model = new Loginmodelresult();
-            string encpass = Encrypt(password);
             model.Login = false;
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                // WAPT01-01: Parameterized login query — no string concatenation
+                // WAPT01-01: Parameterized login query — no string concatenation.
+                // WAPT11: fetch the stored password hash and verify in code (salted
+                // PBKDF2 cannot be matched by a SQL equality check).
                 OracleCommand cmd = new OracleCommand(
-                    "SELECT user_id, user_name, user_branch, user_last_login, roleid, user_status " +
+                    "SELECT user_id, user_name, user_branch, user_last_login, roleid, user_status, user_pwd " +
                     "FROM jsb_security_master " +
-                    "WHERE user_LOG = :usrname AND user_pwd = :encpass AND user_status = 'A'", con);
+                    "WHERE user_LOG = :usrname AND user_status = 'A'", con);
                 cmd.Parameters.Add("usrname", OracleType.VarChar).Value = usrname;
-                cmd.Parameters.Add("encpass", OracleType.VarChar).Value = encpass;
 
                 try
                 {
                     con.Open();
                     OracleDataReader dr = cmd.ExecuteReader();
 
+                    bool authenticated = false;
+
                     if (dr.HasRows)
                     {
                         while (dr.Read())
                         {
-                            // WAPT01-01: Parameterized success audit log insert
-                            OracleCommand cmd2 = new OracleCommand(
-                                "INSERT INTO Users_login VALUES (:ip, :logindate, :uname, '-', 'S')", con);
-                            cmd2.Parameters.Add("ip", OracleType.VarChar).Value = UserHostAddress;
-                            cmd2.Parameters.Add("logindate", OracleType.VarChar).Value = DateTime.Today.ToString();
-                            cmd2.Parameters.Add("uname", OracleType.VarChar).Value = usrname;
-                            cmd2.ExecuteNonQuery();
+                            string storedPwd = dr["user_pwd"] == null ? null : dr["user_pwd"].ToString();
+
+                            // WAPT11: verify against the stored hash; legacy AES values
+                            // are accepted once and flagged for re-hashing.
+                            bool needsUpgrade;
+                            if (!AljazeeraCPanel.Security.PasswordHasher.Verify(password, storedPwd, out needsUpgrade))
+                            {
+                                // Password mismatch for this user — treat as failed login.
+                                break;
+                            }
+
+                            authenticated = true;
 
                             model.UserId = dr[0].ToString();
                             model.user_name = dr[1].ToString();
@@ -5570,6 +5578,29 @@ namespace SIBCPanel.Context
                             model.status = dr[5].ToString();
                             model.user_log = usrname;
                             model.Login = true;
+
+                            // WAPT11: transparently upgrade a legacy-encrypted password to PBKDF2.
+                            if (needsUpgrade)
+                            {
+                                try
+                                {
+                                    OracleCommand up = new OracleCommand(
+                                        "UPDATE jsb_security_master SET user_pwd = :pwd WHERE user_id = :userId", con);
+                                    up.Parameters.Add("pwd", OracleType.VarChar).Value =
+                                        AljazeeraCPanel.Security.PasswordHasher.Hash(password);
+                                    up.Parameters.Add("userId", OracleType.VarChar).Value = model.UserId;
+                                    up.ExecuteNonQuery();
+                                }
+                                catch { /* upgrade is best-effort; never block a valid login */ }
+                            }
+
+                            // WAPT01-01: Parameterized success audit log insert
+                            OracleCommand cmd2 = new OracleCommand(
+                                "INSERT INTO Users_login VALUES (:ip, :logindate, :uname, '-', 'S')", con);
+                            cmd2.Parameters.Add("ip", OracleType.VarChar).Value = UserHostAddress;
+                            cmd2.Parameters.Add("logindate", OracleType.VarChar).Value = DateTime.Today.ToString();
+                            cmd2.Parameters.Add("uname", OracleType.VarChar).Value = usrname;
+                            cmd2.ExecuteNonQuery();
 
                             if (model.user_last_login == "T")
                             {
@@ -5586,7 +5617,8 @@ namespace SIBCPanel.Context
                             }
                         }
                     }
-                    else
+
+                    if (!authenticated)
                     {
                         // WAPT01-01: Parameterized failed login audit log insert
                         OracleCommand cmd2 = new OracleCommand(
@@ -5791,47 +5823,47 @@ namespace SIBCPanel.Context
 
         public String changepass(String usrname, String oldpass, String newpass)
         {
-            String encpass;
-            String new_encpass;
             String lblconfirm = "System Error";
-            encpass = Encrypt(oldpass);
-            OracleCommand cmd;
-            OracleDataReader dr;
-            String Sqlstr;
 
-            Sqlstr = "Select * from jsb_security_master where user_LOG= '"
-                       + usrname + "' and user_pwd= '"
-                       + encpass + "'";
             using (OracleConnection con = new OracleConnection(conString))
             {
-                cmd = new OracleCommand(Sqlstr, con);
                 try
                 {
                     con.Open();
-                    dr = cmd.ExecuteReader();
-                    OracleCommand cmd2;
-                    OracleDataReader dr2;
-                    if (dr.HasRows)
+
+                    // WAPT01 + WAPT11: parameterized lookup, then verify the old password
+                    // against the stored hash in code (no SQL equality on the secret).
+                    OracleCommand cmd = new OracleCommand(
+                        "SELECT user_pwd FROM jsb_security_master WHERE user_LOG = :usrname", con);
+                    cmd.Parameters.Add("usrname", OracleType.VarChar).Value = usrname;
+
+                    string storedPwd = null;
+                    using (OracleDataReader dr = cmd.ExecuteReader())
                     {
-                        while (dr.Read())
-                        {
-                            new_encpass = Encrypt(newpass);
-                            cmd2 = new OracleCommand("update jsb_security_master set user_pwd='"
-                                            + new_encpass + "' where user_log= '"
-                                            + usrname + "'", con);
-                            cmd2.ExecuteNonQuery();
-                            lblconfirm = "Your Password was Changed Successfully";
-                        }
+                        if (dr.Read())
+                            storedPwd = dr["user_pwd"] == null ? null : dr["user_pwd"].ToString();
+                    }
+
+                    bool needsUpgrade;
+                    if (storedPwd != null &&
+                        AljazeeraCPanel.Security.PasswordHasher.Verify(oldpass, storedPwd, out needsUpgrade))
+                    {
+                        // WAPT11: store the new password as a one-way PBKDF2 hash (parameterized).
+                        OracleCommand cmd2 = new OracleCommand(
+                            "UPDATE jsb_security_master SET user_pwd = :pwd WHERE user_log = :usrname", con);
+                        cmd2.Parameters.Add("pwd", OracleType.VarChar).Value =
+                            AljazeeraCPanel.Security.PasswordHasher.Hash(newpass);
+                        cmd2.Parameters.Add("usrname", OracleType.VarChar).Value = usrname;
+                        cmd2.ExecuteNonQuery();
+                        lblconfirm = "Your Password was Changed Successfully";
                     }
                     else
                     {
                         lblconfirm = "Your Password was Not Changed successfully";
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    // lblconfirm.Text = ex.Message
                     lblconfirm = "System Error";
                 }
             }

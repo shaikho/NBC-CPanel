@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,6 +13,7 @@ using System.IO;
 using System.Text;
 using SIBCPanel.Context;
 using System.Security.Cryptography;
+using AljazeeraCPanel.Security;
 using Newtonsoft.Json.Linq;
 
 namespace AljazeeraCPanel.Controllers
@@ -615,7 +616,9 @@ namespace AljazeeraCPanel.Controllers
             {
                 string p = ds.CreatePassword(8);
 
-                string enc_pwd = Encrypt(p);
+                // WAPT11: store a one-way hash; the plaintext temp password is only
+                // sent to the user by SMS below, never persisted.
+                string enc_pwd = PasswordHasher.Hash(p);
                 //insertmodel.Password = enc_pwd;/
                 List<userlist> info = new List<userlist>();
                 info = ds.getMoreinfo(id);
@@ -676,7 +679,8 @@ namespace AljazeeraCPanel.Controllers
 
                 string p = ds.CreatePassword(8);
 
-                string enc_pwd = Encrypt(p);
+                // WAPT11: store a one-way hash; plaintext temp password is SMS'd only.
+                string enc_pwd = PasswordHasher.Hash(p);
                 ////insertmodel.Password = enc_pwd;
 
                 ////int _records = ds.insert(id);

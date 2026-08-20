@@ -234,6 +234,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MenuData.cs" />
     <Compile Include="Repository\PermissionData.cs" />
+    <Compile Include="Security\PasswordHasher.cs" />
     <Compile Include="Validators\PasswordPolicyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
