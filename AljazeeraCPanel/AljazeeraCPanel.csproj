@@ -180,6 +180,7 @@
     <Compile Include="Controllers\UpdateCustomerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\UsersMangementController.cs" />
+    <Compile Include="Filters\AuthorizePermissionAttribute.cs" />
     <Compile Include="Filters\AuthorizeRoleAttribute.cs" />
     <Compile Include="Filters\AuthorizeSessionAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -232,6 +233,7 @@
     <Compile Include="Models\UsersMangementViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\MenuData.cs" />
+    <Compile Include="Repository\PermissionData.cs" />
     <Compile Include="Validators\PasswordPolicyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
