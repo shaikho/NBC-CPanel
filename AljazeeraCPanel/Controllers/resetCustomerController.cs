@@ -1,9 +1,10 @@
-﻿﻿using iTextSharp.text;
+﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Security;
 using SIBCPanel.Context;
 using System;
 using System.Collections.Generic;
@@ -340,6 +341,16 @@ namespace Cpanel.Controllers
                     return RedirectToAction("ResetCust", "resetCustomer");
                 }
 
+                // WAPT07: throttle password-reset requests per customer (feeds the reset SMS):
+                // max 3 requests / 10 minutes.
+                string rlKey = "custreset:" + (model.Branch ?? "");
+                if (RateLimiter.IsBlocked(rlKey, 3))
+                {
+                    Session["userresultF"] = "Too many reset requests for this customer. Please try again later.";
+                    return RedirectToAction("ResetCust", "resetCustomer");
+                }
+                RateLimiter.RegisterAttempt(rlKey, 10);
+
                 if (ds.UpdatecustomerSts(model.Branch, "RR"))
                 {
                     TempData["successful"] = "Reset Customer Password request was successful";
@@ -364,7 +375,7 @@ namespace Cpanel.Controllers
                 //    message = response.GetValue("Response_Message").ToString();
                 //    ModelState.AddModelError("", message);
                 //}
-                return RedirectToAction("ResetCust", model);
+                return RedirectToAction("ResetCust") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 //return View(model);
 
                 //String userbranch = Session["user_branch"].ToString();
@@ -481,7 +492,7 @@ namespace Cpanel.Controllers
                 ModelState.AddModelError("", "Something is missing" + message);
 
             }
-            return RedirectToAction("ResetCust", model);
+            return RedirectToAction("ResetCust") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
             //return View(model);
         }
 

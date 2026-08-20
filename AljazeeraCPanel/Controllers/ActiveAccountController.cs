@@ -1,8 +1,9 @@
-﻿﻿
+﻿
 using AljazeeraCPanel;
 using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Security;
 using Newtonsoft.Json.Linq;
 using SIBCPanel.Context;
 using System;
@@ -225,8 +226,17 @@ namespace Cpanel.Controllers
                 if (!realCode.Equals("DA", StringComparison.OrdinalIgnoreCase))
                 {
                     Session["acresult"] = "Activation request not allowed: customer is not in a deactivated state.";
-                    return RedirectToAction("ActiveCustomer", model);
+                    return RedirectToAction("ActiveCustomer") /* WAPT09 */;
                 }
+
+                // WAPT07: throttle activation requests per customer: max 3 / 10 minutes.
+                string rlKey = "custactivate:" + (model.Branch ?? "");
+                if (RateLimiter.IsBlocked(rlKey, 3))
+                {
+                    Session["acresult"] = "Too many activation requests for this customer. Please try again later.";
+                    return RedirectToAction("ActiveCustomer") /* WAPT09 */;
+                }
+                RateLimiter.RegisterAttempt(rlKey, 10);
 
                 if (ds.UpdatecustomerSts(model.Branch, "RA"))
                 {
@@ -253,7 +263,7 @@ namespace Cpanel.Controllers
                 //    message = response.GetValue("Response_Message").ToString();
                 //    ModelState.AddModelError("", message);
                 //}
-                return RedirectToAction("ActiveCustomer",model);
+                return RedirectToAction("ActiveCustomer") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 //return View(model);
 
                 //String userbranch = Session["user_branch"].ToString();
@@ -370,7 +380,7 @@ namespace Cpanel.Controllers
                 ModelState.AddModelError("", "Something is missing" + message);
 
             }
-            return RedirectToAction("ActiveCustomer",model);
+            return RedirectToAction("ActiveCustomer") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
             //return View(model);
         }
 

@@ -395,7 +395,7 @@ namespace AljazeeraCPanel.Controllers
                     string usershorthand = model.AccountNumber;
                     //string adminbranch = ds.getbranchnameenglish(Session["user_branch"].ToString());
                     //ds.insertadminslog(Session["UserId"].ToString(), Session["user_name"].ToString(), adminbranch, Session["user_roleid"].ToString(), Session["user_status"].ToString(), "Customer inquery", usershorthand + " - " + custname, DateTime.Now.ToString());
-                    return RedirectToAction("EsaliReport", model);
+                    return RedirectToAction("EsaliReport") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 }
                 else
                 {
@@ -558,7 +558,7 @@ namespace AljazeeraCPanel.Controllers
                 message = "Please Contact for Support";
                 ModelState.AddModelError("", "Something is missing or error " + message);
                 Session["failresult"] = "Something is missing or error " + message;
-                 return RedirectToAction("EsaliReport", model);
+                 return RedirectToAction("EsaliReport") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
             }
         }
 

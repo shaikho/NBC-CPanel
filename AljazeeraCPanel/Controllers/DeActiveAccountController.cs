@@ -1,4 +1,4 @@
-﻿﻿using AljazeeraCPanel.Models;
+﻿using AljazeeraCPanel.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +75,7 @@ namespace AljazeeraCPanel.Controllers
                 if (!realCode.Equals("A", StringComparison.OrdinalIgnoreCase))
                 {
                     Session["deresult"] = "Deactivation request not allowed: customer is not in an active state.";
-                    return RedirectToAction("DeActiveCustomer", model);
+                    return RedirectToAction("DeActiveCustomer") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 }
 
                 if (ds.UpdatecustomerSts(model.Branch, "RDA"))
@@ -102,7 +102,7 @@ namespace AljazeeraCPanel.Controllers
                 //    message = response.GetValue("Response_Message").ToString();
                 //    ModelState.AddModelError("", message);
                 //}
-                return RedirectToAction("DeActiveCustomer", model);
+                return RedirectToAction("DeActiveCustomer") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 //return View(model);
 
                 //String userbranch = Session["user_branch"].ToString();
@@ -219,7 +219,7 @@ namespace AljazeeraCPanel.Controllers
                 ModelState.AddModelError("", "Something is missing" + message);
 
             }
-            return RedirectToAction("DeActiveCustomer", model);
+            return RedirectToAction("DeActiveCustomer") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
             //return View(model);
         }
 

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -1096,6 +1096,16 @@ namespace AljazeeraCPanel.Controllers
                 Session["userresultF"] = "Action not allowed: only active users can have a password reset.";
                 return RedirectToAction("Users", "User");
             }
+
+            // WAPT07: throttle admin password-reset requests per target user (feeds an SMS):
+            // max 3 / 10 minutes.
+            string rlKey = "userreset:" + id;
+            if (RateLimiter.IsBlocked(rlKey, 3))
+            {
+                Session["userresultF"] = "Too many reset requests for this user. Please try again later.";
+                return RedirectToAction("Users", "User");
+            }
+            RateLimiter.RegisterAttempt(rlKey, 10);
             //string p = ds.CreatePassword(8);
 
             //string enc_pwd = Encrypt(p);

@@ -12,6 +12,9 @@ namespace AljazeeraCPanel
     {
         protected void Application_Start()
         {
+            // WAPT10: suppress the X-AspNetMvc-Version response header.
+            MvcHandler.DisableMvcResponseHeader = true;
+
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

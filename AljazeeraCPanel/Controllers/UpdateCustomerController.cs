@@ -344,11 +344,11 @@ namespace Cpanel.Controllers
                     message = "Customer Dosen't exist";
                     ModelState.AddModelError("", message);
                     Session["FailedMessage"] = message;
-                    return RedirectToAction("CustInfo", model);
+                    return RedirectToAction("CustInfo") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
                 }
             }
          
-            return RedirectToAction("CustInfo", model);
+            return RedirectToAction("CustInfo") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
         }
 
         [HttpPost]
@@ -391,7 +391,7 @@ namespace Cpanel.Controllers
                 //model.AccTypes = ds.PopulateAccountTypes();
                 //model.Currencies = ds.PopulateCurrencies();
                 model.catgories = ds.GetGatgories();
-                return RedirectToAction("CustInfo", model);
+                return RedirectToAction("CustInfo") /* WAPT09: was RedirectToAction(..., model) — do not serialize model into the redirect URL */;
             }
         }
 

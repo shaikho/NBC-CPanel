@@ -1,5 +1,6 @@
 ﻿using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Models;
+using AljazeeraCPanel.Security;
 using AljazeeraCPanel.Validators;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -60,6 +61,14 @@ namespace AljazeeraCPanel.Controllers
                 if (string.IsNullOrEmpty(ipAddress))
                 {
                     ipAddress = Request.ServerVariables["REMOTE_ADDR"];
+                }
+
+                // WAPT07: rate-limit login attempts per IP + username (5 failures / 15 min).
+                string rlKey = "login:" + ipAddress + ":" + (model.Username ?? "").ToLowerInvariant();
+                if (RateLimiter.IsBlocked(rlKey, 5))
+                {
+                    ModelState.AddModelError("", "Too many failed login attempts. Please try again in a few minutes.");
+                    return View(model);
                 }
 
                 // We do not want to use any existing identity information
@@ -125,6 +134,7 @@ namespace AljazeeraCPanel.Controllers
 
                     if (result.lblconfirm.Equals("home"))
                     {
+                        RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
                         Session.Clear();
                         Session.Abandon();
                         RegenerateSessionId();
@@ -155,6 +165,7 @@ namespace AljazeeraCPanel.Controllers
                         Session.Abandon();
                         RegenerateSessionId();
 
+                        RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
                         Session["cpanelLogin"] = "changepass";
                         Session["accesstoken"] = accesstoken;
                         Session["user_log"] = model.Username;
@@ -168,6 +179,8 @@ namespace AljazeeraCPanel.Controllers
                     }
                     else
                     {
+                        // WAPT07: record a failed attempt against the IP+username window.
+                        RateLimiter.RegisterAttempt(rlKey, 15);
                         ModelState.AddModelError("", result.lblconfirm);
                         return View(model);
                     }

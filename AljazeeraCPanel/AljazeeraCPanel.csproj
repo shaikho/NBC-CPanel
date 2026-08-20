@@ -235,6 +235,7 @@
     <Compile Include="Repository\MenuData.cs" />
     <Compile Include="Repository\PermissionData.cs" />
     <Compile Include="Security\PasswordHasher.cs" />
+    <Compile Include="Security\RateLimiter.cs" />
     <Compile Include="Validators\PasswordPolicyValidator.cs" />
   </ItemGroup>
   <ItemGroup>
