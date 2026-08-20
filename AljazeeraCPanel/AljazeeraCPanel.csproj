@@ -243,6 +243,7 @@
     <Content Include="Configuration\FCBconfiguration.txt" />
     <Content Include="Configuration\sms.txt" />
     <Content Include="Content\872220.png" />
+    <Content Include="Content\nbe-theme.css" />
     <Content Include="Content\addons\datatables-select.css" />
     <Content Include="Content\addons\datatables-select.min.css" />
     <Content Include="Content\addons\datatables.css" />
@@ -313,6 +314,7 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-reboot.min.css.map" />
     <Content Include="fonts\glyphicons-halflings-regular - Copy.woff2" />
+    <Content Include="FX-NBE-Sudan Internet banking-WAPT-Report-v1.0_unlocked.pdf" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile10.pubxml" />

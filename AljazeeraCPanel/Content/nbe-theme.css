@@ -1,0 +1,203 @@
+/* ============================================================================
+   NBE (National Bank of Egypt – Khartoum) brand theme
+   Palette taken from the bank logo:
+     Green  #1A7A3C  (wordmark / rounded frame)   dark #125E2E  light #2A9D4F
+     Orange #F5871F  (upper bars / dome)
+     Gold   #FBB714  (lower bars / underline)
+   Loaded LAST in _Layout so it overrides Bootstrap and legacy inline styles.
+   Cosmetic only — no markup or behaviour changes.
+   ============================================================================ */
+
+:root {
+    --nbe-green: #1A7A3C;
+    --nbe-green-dark: #125E2E;
+    --nbe-green-light: #2A9D4F;
+    --nbe-orange: #F5871F;
+    --nbe-gold: #FBB714;
+    --nbe-bar: linear-gradient(180deg, var(--nbe-orange) 0%, var(--nbe-gold) 100%);
+    --nbe-ink: #243024;
+}
+
+/* ---------- page ---------- */
+body {
+    background-color: #eef3ee;
+    color: var(--nbe-ink);
+}
+
+.container.body-content {
+    background-color: #ffffff;
+    border-top: 4px solid transparent;
+    border-image: var(--nbe-bar) 1;   /* gold→orange accent stripe, echoes the logo underline */
+}
+
+/* ---------- sidebar (was dark navy) ---------- */
+.navready,
+#sidebar {
+    background-color: var(--nbe-green) !important;
+    background-image: linear-gradient(180deg, var(--nbe-green-dark) 0%, var(--nbe-green) 100%) !important;
+}
+
+/* keep the logo header on white */
+#sidebar .sidebar-header {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border-bottom: 3px solid var(--nbe-gold);
+}
+
+#sidebar a,
+#englishnavbar ul li a,
+#sidebar .list-unstyled li a {
+    color: #ffffff !important;
+}
+
+#sidebar ul li a:hover,
+#englishnavbar ul li a:hover,
+#sidebar .list-unstyled li a:hover {
+    background-color: var(--nbe-orange) !important;
+    color: #ffffff !important;
+}
+
+/* expanded / active menu groups */
+#sidebar ul ul,
+#sidebar .collapse.in {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ---------- headings / section titles ---------- */
+h1, h2, h3, h4, h5, legend, .page-header {
+    color: var(--nbe-green);
+}
+
+.page-header {
+    border-bottom-color: var(--nbe-gold);
+}
+
+/* ---------- links ---------- */
+a {
+    color: var(--nbe-green);
+}
+
+a:hover, a:focus {
+    color: var(--nbe-orange);
+}
+
+/* ---------- buttons ---------- */
+/* primary structural actions -> green */
+.btn-primary,
+.btn-success {
+    background-color: var(--nbe-green) !important;
+    border-color: var(--nbe-green-dark) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover, .btn-primary:focus,
+.btn-success:hover, .btn-success:focus {
+    background-color: var(--nbe-green-dark) !important;
+    border-color: var(--nbe-green-dark) !important;
+}
+
+/* secondary / submit / info -> orange→gold */
+.btn-info,
+.btn-warning,
+.btn-submit,
+input[type="submit"].btn,
+button[type="submit"].btn:not(.btn-danger):not(.btn-primary):not(.btn-success) {
+    background: var(--nbe-bar) !important;
+    border: none !important;
+    color: #fff !important;
+}
+
+.btn-danger {
+    background-color: #C0392B !important;
+    border-color: #96271b !important;
+}
+
+/* Legacy inline-coloured buttons across the app (gold/orange hex baked into style="")
+   — a CSS !important rule still beats a non-important inline declaration. */
+[style*="#fdc654"],
+[style*="#EB9815"],
+[style*="#eb9815"],
+[style*="#24295E"],
+[style*="#24295e"],
+[style*="#0A0A29"] {
+    background: var(--nbe-bar) !important;
+    border-color: var(--nbe-gold) !important;
+}
+
+/* keep white/plain surfaces readable if they were forced navy */
+[style*="#0A0A29"] {
+    background: var(--nbe-green) !important;
+}
+
+/* ---------- tables ---------- */
+.table > thead > tr > th,
+table.dataTable thead th,
+table.dataTable thead td {
+    background-color: var(--nbe-green) !important;
+    color: #ffffff !important;
+    border-color: var(--nbe-green-dark) !important;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: #f3f8f4;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: #e6f2ea;
+}
+
+/* ---------- forms ---------- */
+.form-control:focus {
+    border-color: var(--nbe-green-light);
+    box-shadow: 0 0 0 0.15rem rgba(42, 157, 78, 0.25);
+}
+
+/* ---------- misc bootstrap accents ---------- */
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    color: var(--nbe-green);
+    border-top: 2px solid var(--nbe-gold);
+}
+
+.label-primary, .badge {
+    background-color: var(--nbe-green);
+}
+
+.progress-bar {
+    background-color: var(--nbe-green);
+}
+
+.pagination > .active > a,
+.pagination > .active > a:hover,
+.pagination > .active > span {
+    background-color: var(--nbe-green) !important;
+    border-color: var(--nbe-green-dark) !important;
+}
+
+.pagination > li > a {
+    color: var(--nbe-green);
+}
+
+/* DataTables length/search + paging buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: var(--nbe-green) !important;
+    border-color: var(--nbe-green-dark) !important;
+    color: #fff !important;
+}
+
+/* panels / boxes */
+.panel-primary > .panel-heading,
+.box-header,
+.card-header {
+    background-color: var(--nbe-green) !important;
+    border-color: var(--nbe-green-dark) !important;
+    color: #fff !important;
+}
+
+/* alerts keep semantic meaning but soften success to brand green */
+.alert-success {
+    background-color: #e6f2ea;
+    border-color: var(--nbe-green-light);
+    color: var(--nbe-green-dark);
+}

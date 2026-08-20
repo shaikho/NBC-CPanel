@@ -29,14 +29,15 @@
 
         html, body {
             font-family: 'Roboto', sans-serif;
-            color: #24295E;
+            color: #1A7A3C;
             padding: 0px;
             margin: 0px;
-            background-color: #24295E;
+            background-color: #125E2E;
+            background-image: linear-gradient(135deg, #125E2E 0%, #1A7A3C 60%, #2A9D4F 100%);
         }
 
             html h3, body h3 {
-                color: #24295E;
+                color: #1A7A3C;
             }
 
         input[type='text']::-webkit-input-placeholder, input[type='password']::-webkit-input-placeholder {
@@ -62,8 +63,9 @@
             position: absolute;
             text-align: center;
             background-color: white;
-            border-right: 1px solid #24295E;
-            box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);
+            border-top: 5px solid;
+            border-image: linear-gradient(90deg, #F5871F, #FBB714) 1;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.3);
         }
 
 
@@ -75,13 +77,13 @@
                 display: block;
                 border: none;
                 padding: 10px 0;
-                border-bottom: solid 1px #24295E;
+                border-bottom: solid 1px #1A7A3C;
                 transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
-                background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #24295E 4%);
+                background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 96%, #1A7A3C 4%);
                 background-position: -200px 0;
                 background-size: 200px 100%;
                 background-repeat: no-repeat;
-                color: #24295E;
+                color: #1A7A3C;
             }
 
                 .login-panel input[type='text']:focus, .login-panel input[type='password']:focus {
@@ -91,14 +93,14 @@
                 }
 
                     .login-panel input[type='text']:focus::-webkit-input-placeholder, .login-panel input[type='password']:focus::-webkit-input-placeholder {
-                        color: #24295E;
+                        color: #1A7A3C;
                         font-size: 11px;
                         transform: translateY(-20px);
                         visibility: visible !important;
                     }
 
             .login-panel .btn-submit {
-                background: #24295E;
+                background: #1A7A3C;
                 cursor: pointer;
                 margin: 0 auto;
                 position: relative;
@@ -109,7 +111,7 @@
             }
 
                 .login-panel .btn-submit:hover {
-                    background: #24295E;
+                    background: #1A7A3C;
                 }
 
         .ripple {
@@ -124,7 +126,7 @@
     @*<div class="col-sm-12 col-sm-offset-5 col-md-12 col-md-offset-4 col-lg-12 col-lg-offset-4 col-xl-12 col-xl-offset-5">
 
             <div class="row">
-                <img src="~/Images/Capture.jpg" style="width: 25.1%; height: 19.5%; margin-top: 3%; margin-left: 4.2%; border-right: 1px solid #24295E; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
+                <img src="~/Images/Capture.jpg" style="width: 25.1%; height: 19.5%; margin-top: 3%; margin-left: 4.2%; border-right: 1px solid #1A7A3C; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
             </div>
         </div>*@
 
@@ -139,7 +141,7 @@
         {
 
             <div class="row">
-                <img src="~/Images/Capture.jpg" style="width: 88%; margin-top: 3%; margin-left: 3%; border-right: 1px solid #24295E; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
+                <img src="~/Images/Capture.jpg" style="width: 88%; margin-top: 3%; margin-left: 3%; border-right: 1px solid #1A7A3C; box-shadow: 2px 2px 7px rgba(0, 0, 0, 0.26);" />
             </div>
 
             @Html.AntiForgeryToken();
@@ -161,8 +163,8 @@
             <br />
             <br />
             @*<div ripple ripple-class="ripple" ripple-diameter="50" ripple-stream="true" class="btn-submit">Login</div>*@
-            @*<input type="submit" value="Login" style="width:80%;background-color:#24295E;border-color:#24295E;color:white;font-family: 'Roboto', sans-serif;" onclick="returndisplayprogressmessage(this, 'Loggin in...' );" />*@
-            <button type="submit" onclick='submitanddisable();' class="btn" style="background-color:#24295E;font-family: 'Roboto', sans-serif;color:white;font-size:small;margin-top:-5px;width:85%;height:30px">LOGIN</button>
+            @*<input type="submit" value="Login" style="width:80%;background-color:#1A7A3C;border-color:#1A7A3C;color:white;font-family: 'Roboto', sans-serif;" onclick="returndisplayprogressmessage(this, 'Loggin in...' );" />*@
+            <button type="submit" onclick='submitanddisable();' class="btn" style="background:linear-gradient(180deg,#F5871F,#FBB714);border:none;font-family: 'Roboto', sans-serif;color:white;font-weight:bold;font-size:small;margin-top:-5px;width:85%;height:34px">LOGIN</button>
 
         }
         @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })

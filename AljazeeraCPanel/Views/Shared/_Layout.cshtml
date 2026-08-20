@@ -20,6 +20,8 @@
     <script src="~/Content/bootstrap.min.js"></script>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="~/Content/style.css">
+    <!-- NBE (Khartoum) brand theme — must load LAST so it overrides the above -->
+    <link rel="stylesheet" href="~/Content/nbe-theme.css">
     <link href="~/Images/jsb_images/logo_transperant" rel="shortcut icon" type="image/x-icon" />
     <script src="~/Scripts/sweetalert2.9.js"></script>
 
@@ -34,19 +36,20 @@
             font-family: 'Almarai-Regular', sans-serif;
         }
 
+        /* NBE brand: deep-green sidebar (was navy #0A0A29) */
         .navready {
             min-height: 100vh;
-            background-color: #0A0A29;
-            background-image: url('../../Images/jsb_images/maze-white.png');
+            background-color: #1A7A3C;
+            background-image: linear-gradient(180deg, #125E2E 0%, #1A7A3C 100%);
         }
 
         #sidebar {
-            background-color: #0A0A29;
-            background-image: url('../../Images/jsb_images/maze-white.png') !important;
+            background-color: #1A7A3C;
+            background-image: linear-gradient(180deg, #125E2E 0%, #1A7A3C 100%) !important;
         }
 
         #englishnavbar ul li a:hover {
-            background-color: #F39200;
+            background-color: #F5871F;
         }
 
         .validation-summary-errors{
