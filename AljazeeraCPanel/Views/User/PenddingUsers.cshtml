@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AljazeeraCPanel.Models.userlist>
+﻿﻿@model IEnumerable<AljazeeraCPanel.Models.userlist>
 
 @{
     ViewBag.Title = "Users";
@@ -91,8 +91,19 @@
                                         </td>
 
                                         <td style="font-size:small">
-                                            @Html.ActionLink("Autherize", "Autherize", new { id = item.user_id , status = item.user_status_code }, new { @style = "color:black;" }) |
-                                            @Html.ActionLink("Reject", "Reject", new { id = item.user_id, status = item.user_status_code }, new { @style = "color:black;" }) 
+                                            @* WAPT05/06: POST + anti-forgery; the pending action is derived server-side from the DB status, so only the id is sent. *@
+                                            @using (Html.BeginForm("Autherize", "User", FormMethod.Post, new { style = "display:inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Autherize</button>
+                                            } |
+                                            @using (Html.BeginForm("Reject", "User", FormMethod.Post, new { style = "display:inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Reject</button>
+                                            }
                                             @*@if (item.user_status.Equals("RDA"))
                                             {
                                                 @Html.ActionLink("Activate", "AuthActivate", new { id = item.user_id }, new { @style = "color:black;" }) 

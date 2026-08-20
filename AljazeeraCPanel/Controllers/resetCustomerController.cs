@@ -1,4 +1,4 @@
-﻿using iTextSharp.text;
+﻿﻿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
@@ -311,7 +311,9 @@ namespace Cpanel.Controllers
 
 
         }
+        // WAPT05: anti-forgery on this state-changing POST.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateCustomerSts(CustomerRegBankinfo model)
         {
             if (Session["user_name"] == null)
@@ -326,15 +328,17 @@ namespace Cpanel.Controllers
 
             try
             {
-                //if ("".Equals("Un Autherize"))
-                //{
-                //    // ModelState.AddModelError("", "Can Not Reset Password");
-                //    // return View("Users");
-                //     message = "Customer is not authorized. Password reset cannot be performed";
-                //    Session["userresultF"] = message;
-                //    return RedirectToAction("ResetCust", "resetCustomer");
-                //    // return View("Users");
-                //}
+                // WAPT04/06: a password-reset request may only be raised on a customer whose
+                // REAL current status is Active. This is the exact bypass from the report
+                // (an "Unauthorized" customer was moved to "Request to Reset", skipping
+                // the approval stage). Status is re-derived from the DB, never trusted from
+                // the client.
+                string realCode = ds.getCustomerStatusCode(model.Branch) ?? "";
+                if (!realCode.Equals("A", StringComparison.OrdinalIgnoreCase))
+                {
+                    Session["userresultF"] = "Password reset request not allowed: customer is not in an active state.";
+                    return RedirectToAction("ResetCust", "resetCustomer");
+                }
 
                 if (ds.UpdatecustomerSts(model.Branch, "RR"))
                 {

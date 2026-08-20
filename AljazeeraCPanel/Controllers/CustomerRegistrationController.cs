@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿﻿using Newtonsoft.Json.Linq;
 using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
@@ -364,7 +364,9 @@ namespace AljazeeraCPanel.Controllers
 
             return View(model);
         }
+        // WAPT05: anti-forgery on this state-changing POST.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult custinfo(CustomerRegBankinfo2 model)
         {
             if (Session["user_name"] == null)
@@ -376,7 +378,23 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            
+            // WAPT06: the phone number and account are NOT client-editable — they must be
+            // one of the values the core banking system returned for this customer (held
+            // server-side in session). A tampered request that submits any other value is
+            // rejected here, rather than trusting the posted field.
+            var allowedPhones = Session["custphone"] as List<SelectListItem>;
+            bool phoneOk = allowedPhones != null && model.selectedphonenumber != null &&
+                           allowedPhones.Exists(p => p.Value == model.selectedphonenumber);
+            var allowedAccounts = Session["accountDetails"] as List<AccountDetails>;
+            bool accountOk = allowedAccounts != null && model.selectedaccount != null &&
+                             allowedAccounts.Exists(a => a.Account_No == model.selectedaccount);
+            if (!phoneOk || !accountOk)
+            {
+                Session["fail"] = "Invalid phone number or account selection. Please choose from the values provided by the bank.";
+                return RedirectToAction("custinfo");
+            }
+
+
             //model.Profiles = ds.PopulateProfiles();
 
             //var Selectedprofile = model.Profiles.Find(p => p.Text == model.selectedprofile.ToString());

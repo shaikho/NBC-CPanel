@@ -1,4 +1,4 @@
-﻿@model AljazeeraCPanel.Models.CustomerAuthorizationinfo
+﻿﻿@model AljazeeraCPanel.Models.CustomerAuthorizationinfo
 
 
 @{
@@ -169,12 +169,21 @@
                 <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups" style="position:relative;left:30%">
                     <div class="btn-group" role="group" aria-label="First group">
 
-
-                        @Html.ActionLink("Authorize Customer", "Authorize", new { id = Model.userid, status = Model.authsts }, new { @class = "btn btn-success btn-block btn-flat " })
+                        @* WAPT05/06: POST + anti-forgery; action derived from real status server-side. *@
+                        @using (Html.BeginForm("Authorize", "CustomerAuthorization", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.userid" />
+                            <button type="submit" class="btn btn-success btn-block btn-flat ">Authorize Customer</button>
+                        }
                     </div>
                     <div class="btn-group" role="group" aria-label="Second group">
-                        @Html.ActionLink("Reject Customer", "Reject", new { id = Model.userid, status = Model.rjtsts }, new { @class = "btn btn-danger  btn-block btn-flat " })
-
+                        @using (Html.BeginForm("Reject", "CustomerAuthorization", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.userid" />
+                            <button type="submit" class="btn btn-danger  btn-block btn-flat ">Reject Customer</button>
+                        }
 
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AljazeeraCPanel.Models.userlist>
+﻿﻿@model IEnumerable<AljazeeraCPanel.Models.userlist>
 
 @{
     ViewBag.Title = "Users";
@@ -99,11 +99,33 @@
                                         </td>
 
                                         <td style="font-size:small">
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.user_id, sts = item.user_status }, new { @style = "color:black;" }) |
-                                            @Html.ActionLink("Reset", "Reset", new { id = item.user_id, sts = item.user_status }, new { @style = "color:black;" }) |
-                                            @Html.ActionLink("Deactivate", "Deactivate", new { id = item.user_id, sts = item.user_status }, new { @style = "color:black;" }) |
-                                            @Html.ActionLink("Activate", "Activate", new { id = item.user_id, sts = item.user_status }, new { @style = "color:black;" }) |
-                                            @Html.ActionLink("Delete", "Delete", new { id = item.user_id, sts = item.user_status }, new { @style = "color:black;" })
+                                            @* WAPT05: state-changing actions are POST forms with an anti-forgery token.
+                                               WAPT06: only the user id is sent; status is validated server-side. Edit stays a GET (it only opens the form). *@
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.user_id }, new { @style = "color:black;" }) |
+                                            @using (Html.BeginForm("Reset", "User", FormMethod.Post, new { style = "display:inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Reset</button>
+                                            } |
+                                            @using (Html.BeginForm("Deactivate", "User", FormMethod.Post, new { style = "display:inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Deactivate</button>
+                                            } |
+                                            @using (Html.BeginForm("Activate", "User", FormMethod.Post, new { style = "display:inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Activate</button>
+                                            } |
+                                            @using (Html.BeginForm("Delete", "User", FormMethod.Post, new { style = "display:inline", onsubmit = "return confirm('Submit a delete request for this user?');" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.user_id" />
+                                                <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Delete</button>
+                                            }
                                         </td>
                                     </tr>
                                 }

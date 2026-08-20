@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AljazeeraCPanel.Models.CustomerAuthorization>
+﻿﻿@model IEnumerable<AljazeeraCPanel.Models.CustomerAuthorization>
 
 
 
@@ -65,7 +65,19 @@
                         @Html.DisplayFor(modelItem => item.createdby)
                     </td>
                     <td style="font-size:small;color-rendering:initial">
-                        @Html.ActionLink("Authorize", "Authorize", new { id = item.CustomerID , sts = item.stscode }, new { @style = "color:black;" }) | @Html.ActionLink("Reject", "Reject", new { id = item.CustomerID , sts = item.custsts }, new { @style = "color:black;" })
+                        @* WAPT05/06: POST + anti-forgery; the action is derived from the customer's real status server-side, so only the id is sent. *@
+                        @using (Html.BeginForm("Authorize", "CustomerAuthorization", FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.CustomerID" />
+                            <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Authorize</button>
+                        } |
+                        @using (Html.BeginForm("Reject", "CustomerAuthorization", FormMethod.Post, new { style = "display:inline" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.CustomerID" />
+                            <button type="submit" style="background:none;border:none;padding:0;color:black;cursor:pointer;text-decoration:underline">Reject</button>
+                        }
                     </td>
                 </tr>
             }

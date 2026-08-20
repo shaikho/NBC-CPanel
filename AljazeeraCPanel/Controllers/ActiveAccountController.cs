@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 using AljazeeraCPanel;
 using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
@@ -201,7 +201,9 @@ namespace Cpanel.Controllers
             }
             return View(model);
         }
+        // WAPT05: anti-forgery on this state-changing POST.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateCustomerSts(CustomerRegBankinfo model)
         {
             if (Session["user_name"] == null)
@@ -216,14 +218,16 @@ namespace Cpanel.Controllers
 
             try
             {
-
-                if (model.status.Equals("A"))
+                // WAPT04/06: an activation request may only be raised on a customer whose
+                // REAL current status is Deactivated. Re-derived from the DB so a tampered
+                // "status" field cannot bypass the approval workflow.
+                string realCode = ds.getCustomerStatusCode(model.Branch) ?? "";
+                if (!realCode.Equals("DA", StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AddModelError("", "User Already Activated");
-                    Session["acresult"] = "User Already Activated ";
+                    Session["acresult"] = "Activation request not allowed: customer is not in a deactivated state.";
                     return RedirectToAction("ActiveCustomer", model);
                 }
- 
+
                 if (ds.UpdatecustomerSts(model.Branch, "RA"))
                 {
                     Session["acresult"] = "Customer information activation request was successful";

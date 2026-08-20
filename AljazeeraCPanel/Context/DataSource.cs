@@ -2115,9 +2115,11 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("Update jsb_security_master set user_log = :user_log, user_name = :user_name, roleid = :roleid, user_branch = :user_branch, user_mobile = :user_mobile, user_email = :user_email, user_status = 'RED' where user_id = :user_id", con);
-                cmd.Parameters.Add("user_log", OracleType.VarChar).Value = model.user_name;
-                cmd.Parameters.Add("user_name", OracleType.VarChar).Value = model.name;
+                // WAPT06: login name (user_log) and first name (user_name) are immutable
+                // after creation — they are intentionally NOT updated here, so a tampered
+                // request cannot change another user's identity. Only role, branch,
+                // mobile and email are editable.
+                OracleCommand cmd = new OracleCommand("Update jsb_security_master set roleid = :roleid, user_branch = :user_branch, user_mobile = :user_mobile, user_email = :user_email, user_status = 'RED' where user_id = :user_id", con);
                 cmd.Parameters.Add("roleid", OracleType.VarChar).Value = model.roleid;
                 cmd.Parameters.Add("user_branch", OracleType.VarChar).Value = model.BranchCode;
                 cmd.Parameters.Add("user_mobile", OracleType.VarChar).Value = model.phone;
@@ -2907,6 +2909,43 @@ namespace SIBCPanel.Context
 
 
         }
+        /// <summary>
+        /// WAPT06: returns the authoritative raw USER_STATUS code from the database for
+        /// a given user_id (e.g. "A","D","DE","UA","RA","RDA","RD","RED","RRP","R").
+        /// State-changing actions must validate against this, never a client-supplied value.
+        /// Returns null if the user does not exist.
+        /// </summary>
+        public string getUserStatusCode(int user_id)
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand(
+                    "select user_status from jsb_security_master where user_id = :user_id", con);
+                cmd.Parameters.Add("user_id", OracleType.Int32).Value = user_id;
+                con.Open();
+                object o = cmd.ExecuteScalar();
+                return o == null || o == DBNull.Value ? null : o.ToString().Trim();
+            }
+        }
+
+        /// <summary>
+        /// WAPT06: authoritative raw customer status from users_jsb, keyed by user_log.
+        /// Customer state-changing actions must validate against this, never a client value.
+        /// Returns null if the customer is not found.
+        /// </summary>
+        public string getCustomerStatusCode(string user_log)
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand(
+                    "select user_status from users_jsb where user_log = :user_log", con);
+                cmd.Parameters.Add("user_log", OracleType.VarChar).Value = user_log;
+                con.Open();
+                object o = cmd.ExecuteScalar();
+                return o == null || o == DBNull.Value ? null : o.ToString().Trim();
+            }
+        }
+
         public int Authresetpassworduser(int user_id)
         {
             string p = CreatePassword(8);

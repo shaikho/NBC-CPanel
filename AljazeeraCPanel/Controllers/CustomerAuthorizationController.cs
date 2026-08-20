@@ -1,4 +1,4 @@
-﻿using AljazeeraCPanel.Context;
+﻿﻿using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using Newtonsoft.Json.Linq;
@@ -172,7 +172,12 @@ namespace AljazeeraCPanel.Controllers
             return View(model);
         }
 
-        public ActionResult Authorize(string id , string sts)
+        // WAPT05: POST + anti-forgery. WAPT06: the pending action is taken from the
+        // customer's REAL status in the DB, never from a client-supplied value
+        // (prevents forcing a different approval branch).
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Authorize(string id)
         {
             if (Session["user_name"] == null)
             {
@@ -183,6 +188,8 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
             string message = "";
+            // WAPT06: authoritative status from DB; ignore anything the client sends.
+            string sts = ds.getCustomerStatusCode(id) ?? "";
             if (sts.Equals("UA"))
             {
                 string apiresponse = Connecttocore.authroizeCustomer(id.ToString(), Session["accesstoken"].ToString());
@@ -274,7 +281,11 @@ namespace AljazeeraCPanel.Controllers
             }
             return RedirectToAction("CustomerAuthorization");
         }
-        public ActionResult Reject(string id, string sts)  //String status
+        // WAPT05: POST + anti-forgery. WAPT06: reject decision is derived from the
+        // customer's REAL status in the DB, not from a client-supplied value.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reject(string id)  //String status
         {
             if (Session["user_name"] == null)
             {
@@ -286,6 +297,19 @@ namespace AljazeeraCPanel.Controllers
             }
             string message;
 
+            // WAPT06: map the authoritative raw status to the decoded label the branches use.
+            string realCode = ds.getCustomerStatusCode(id) ?? "";
+            string sts;
+            switch (realCode.ToUpperInvariant())
+            {
+                case "UA": sts = "Un Authorized"; break;
+                case "RA": sts = "Request to Activate"; break;
+                case "RDA": sts = "Request to DeActivate"; break;
+                case "RR": sts = "Request to Reset Password"; break;
+                default:
+                    Session["fail"] = "This customer has no pending request to reject.";
+                    return RedirectToAction("CustomerAuthorization");
+            }
 
             try
             {

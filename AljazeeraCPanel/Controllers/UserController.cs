@@ -23,6 +23,34 @@ namespace AljazeeraCPanel.Controllers
     {
         DataSource ds = new DataSource();
         Connecttocore core = new Connecttocore();
+
+        // WAPT06: raw status codes that mean "a request is already pending" — no new
+        // maker action may be started while the account sits in one of these.
+        private static readonly System.Collections.Generic.HashSet<string> PendingCodes =
+            new System.Collections.Generic.HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+            { "RA", "RDA", "RD", "RED", "RRP" };
+
+        /// <summary>
+        /// WAPT04/06: reject reverts the pending request server-side, derived from the
+        /// account's REAL status code — never from a client-supplied value, and never a
+        /// delete. A request to delete (RD) reverts to Active so the account is kept.
+        /// </summary>
+        private static string RevertStatusFor(string realCode)
+        {
+            switch ((realCode ?? "").ToUpperInvariant())
+            {
+                // Preserves the application's existing revert mapping (per sign-off),
+                // with the one WAPT04 correction: RD no longer maps to 'DE' (delete).
+                case "UA": return "UA";   // brand-new, unauthorized: stays pending review
+                case "RA": return "A";
+                case "RDA": return "D";
+                case "RD": return "A";    // was 'DE' (delete) — now keeps the account (WAPT04)
+                case "RRP": return "A";
+                case "RED": return "A";
+                default: return null;     // not a pending/rejectable state
+            }
+        }
+
         public FileResult CreatePdf()
         {
             MemoryStream workStream = new MemoryStream();
@@ -597,7 +625,12 @@ namespace AljazeeraCPanel.Controllers
 
 
      
-        public ActionResult Autherize(int id , string status )
+        // WAPT05: POST + anti-forgery. WAPT06: the pending action to approve is taken
+        // from the DB's real status, never from a client-supplied value (prevents the
+        // "modify status to bypass the checker approval stage" workflow bypass).
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Autherize(int id)
         {
 
             if (Session["user_name"] == null)
@@ -607,6 +640,14 @@ namespace AljazeeraCPanel.Controllers
             if (Session["user_branch"] == null)
             {
                 return RedirectToAction("Login", "Login");
+            }
+
+            // WAPT06: authoritative status from DB. Only pending/unauthorized states are approvable.
+            string status = ds.getUserStatusCode(id) ?? "";
+            if (!status.Equals("UA", StringComparison.OrdinalIgnoreCase) && !PendingCodes.Contains(status))
+            {
+                Session["userresultF"] = "This user has no pending request to authorize.";
+                return RedirectToAction("PenddingUsers", "User");
             }
 
             //if(status.Equals("RA"))
@@ -817,10 +858,13 @@ namespace AljazeeraCPanel.Controllers
             //return View(model);
         }
 
-        public ActionResult Reject(int id , string status)
+        // WAPT05: state-changing action requires POST + anti-forgery token.
+        // WAPT04/06: status is taken from the DB, not from the client; reject reverts
+        // the pending request (never deletes).
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reject(int id)
         {
-
-
             if (Session["user_name"] == null)
             {
                 return RedirectToAction("Login", "Login");
@@ -830,55 +874,37 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            String sts = "";
+            // WAPT06: derive the real status from the DB, ignore any client-supplied value.
+            string realCode = ds.getUserStatusCode(id);
+            string sts = RevertStatusFor(realCode);
+            if (sts == null)
+            {
+                Session["userresultF"] = "This user has no pending request to reject.";
+                return RedirectToAction("PenddingUsers", "User");
+            }
+
             string adminbranch = ds.getbranchnameenglish(Session["user_branch"].ToString());
             List<userlist> info = new List<userlist>();
             info = ds.getMoreinfo(id);
 
             ds.insertadminslog(Session["UserId"].ToString(), Session["user_name"].ToString(), adminbranch, Session["user_roleid"].ToString(), Session["user_status"].ToString(), "User Rejected", info[0].user_log + " - " + info[0].user_name, DateTime.Now.ToString());
-            if (status.Equals("UA"))
-                sts = "UA";
-            if (status.Equals("RA"))
-                sts = "A";
-            if (status.Equals("RDA"))
-                sts = "D";
-            if (status.Equals("RD"))
-                sts = "DE";
-            if (status.Equals("RRP"))
-                sts = "A";
 
-
-
-            // sts = "A";
-            if (status.Equals("RED"))
-                sts = "A";
-
-
-
-
-            //////////////////////////////
             int records = ds.UpdateuserSTS(id, sts);
             if (records > 0)
             {
-                String message = "User Request Rejected Successfully";
-                Session["userresult"] = message;
+                Session["userresult"] = "User Request Rejected Successfully";
                 return RedirectToAction("PenddingUsers", "User");
             }
             else
             {
-                ModelState.AddModelError("", "Failed to Autherize");
-                return View("PenddingUsers");
+                Session["userresultF"] = "Failed to reject the request";
+                return RedirectToAction("PenddingUsers", "User");
             }
-
-
-            //model.Branches = ds.PopulateBranchsForAdmins();
-            //model.Roles = ds.PopulatecpanelProfiles();
-            //return View(model);
         }
 
 
         [HttpGet]
-        public ActionResult Edit(int id , string sts)
+        public ActionResult Edit(int id)
         {
             if (Session["user_name"] == null)
             {
@@ -889,42 +915,12 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            if (sts.Equals("Request To Activate") || sts.Equals("Request To DeActivate") || sts.Equals("Request To Edit") || sts.Equals("Request To Delete") || sts.Equals("Request To Reset"))
+            // WAPT06: only currently Active accounts may be edited — checked against the DB.
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "A", StringComparison.OrdinalIgnoreCase))
             {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Action not allowed with pending or under request user status";
-                Session["userresultF"] = message;
+                Session["userresultF"] = "Action not allowed: only active users can be edited.";
                 return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-            if (sts.Equals("Deactive"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Only active users are allowed to be edited";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-            if (sts.Equals("Un Autherize"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Unautherized users are not allowed";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Rejected"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Please submit a new request or delete this user";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
             }
 
             userUpdateModel model;
@@ -941,6 +937,7 @@ namespace AljazeeraCPanel.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Edit(AljazeeraCPanel.Models.userUpdateModel updatemodel, int id)
         {
 
@@ -952,6 +949,18 @@ namespace AljazeeraCPanel.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
+
+            // WAPT06: only currently Active accounts may be edited (server-side check).
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "A", StringComparison.OrdinalIgnoreCase))
+            {
+                Session["userresultF"] = "Action not allowed: only active users can be edited.";
+                return RedirectToAction("Users", "User");
+            }
+            // WAPT06: bind the target id from the route, not from a hidden/posted field the
+            // client could swap. Login name and first name are immutable after creation
+            // and are ignored by ds.Update (see DataSource.Update).
+            updatemodel.user_id = id;
 
             updatemodel.Roles = ds.PopulatecpanelProfiles();
             String userbranch = Session["user_branch"].ToString();
@@ -1000,7 +1009,10 @@ namespace AljazeeraCPanel.Controllers
             return View(updatemodel);
         }
 
-        public ActionResult Delete(int id, string sts)
+        // WAPT05: POST + anti-forgery. WAPT06: gate on the real DB status, not client input.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
         {
             if (Session["user_name"] == null)
             {
@@ -1011,33 +1023,12 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            if (sts.Equals("Request To Activate") || sts.Equals("Request To DeActivate") || sts.Equals("Request To Edit") || sts.Equals("Request To Delete") || sts.Equals("Request To Reset"))
+            // WAPT06: a delete request may only be raised on a currently Active account.
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "A", StringComparison.OrdinalIgnoreCase))
             {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Action not allowed with pending or under request user status";
-                Session["userresultF"] = message;
+                Session["userresultF"] = "Action not allowed: only active users can be deleted.";
                 return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-            if (sts.Equals("Deactive"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Only active users are allowed to be deleted";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Un Autherize"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Unautherized users are not allowed";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
             }
 
             int records = ds.deleteuser(id);
@@ -1084,7 +1075,10 @@ namespace AljazeeraCPanel.Controllers
         //    // return View("Index");
         //}
 
-        public ActionResult Reset(int id , string sts)
+        // WAPT05: POST + anti-forgery. WAPT06: gate on the real DB status.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Reset(int id)
         {
             if (Session["user_name"] == null)
             {
@@ -1095,43 +1089,12 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            if (sts.Equals("Request To Activate") || sts.Equals("Request To DeActivate") || sts.Equals("Request To Edit") || sts.Equals("Request To Delete") || sts.Equals("Request To Reset"))
+            // WAPT06: password reset may only be requested on a currently Active account.
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "A", StringComparison.OrdinalIgnoreCase))
             {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Action not allowed with pending or under request user status";
-                Session["userresultF"] = message;
+                Session["userresultF"] = "Action not allowed: only active users can have a password reset.";
                 return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Deactive"))
-            {
-               // ModelState.AddModelError("", "Can Not Reset Password");
-               // return View("Users");
-                String message = "Only active Users are allowed to reset password";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            } //
-            if (sts.Equals("Un Autherize"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Unautherized users are not allowed";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Rejected"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Please submit a new request or delete this user";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
             }
             //string p = ds.CreatePassword(8);
 
@@ -1241,7 +1204,10 @@ namespace AljazeeraCPanel.Controllers
         //}
 
 
-        public ActionResult Deactivate(int id, string sts)
+        // WAPT05: POST + anti-forgery. WAPT06: gate on the real DB status.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Deactivate(int id)
         {
             if (Session["user_name"] == null)
             {
@@ -1252,45 +1218,13 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            if (sts.Equals("Request To Activate") || sts.Equals("Request To DeActivate") || sts.Equals("Request To Edit") || sts.Equals("Request To Delete") || sts.Equals("Request To Reset"))
+            // WAPT06: deactivation may only be requested on a currently Active account.
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "A", StringComparison.OrdinalIgnoreCase))
             {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Action not allowed with pending or under request user status";
-                Session["userresultF"] = message;
+                Session["userresultF"] = "Action not allowed: only active users can be deactivated.";
                 return RedirectToAction("Users", "User");
-                // return View("Users");
             }
-
-            if (sts.Equals("Rejected"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Please submit a new request or delete this user";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-            if (sts.Equals("Deactive"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "User is already deactivated";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-            if (sts.Equals("Un Autherize"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Unautherized users are not allowed";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-           // Unautherized users are not allowed
 
             int records = ds.deactive(id);
             if (records > 0)
@@ -1312,7 +1246,10 @@ namespace AljazeeraCPanel.Controllers
             // return View("Index");
         }
 
-        public ActionResult Activate(int id , string sts)
+        // WAPT05: POST + anti-forgery. WAPT06: gate on the real DB status.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Activate(int id)
         {
             if (Session["user_name"] == null)
             {
@@ -1323,44 +1260,12 @@ namespace AljazeeraCPanel.Controllers
                 return RedirectToAction("Login", "Login");
             }
 
-            if (sts.Equals("Request To Activate") || sts.Equals("Request To DeActivate") || sts.Equals("Request To Edit") || sts.Equals("Request To Delete") || sts.Equals("Request To Reset"))
+            // WAPT06: activation may only be requested on a currently Deactivated account.
+            string realCode = ds.getUserStatusCode(id);
+            if (!string.Equals(realCode, "D", StringComparison.OrdinalIgnoreCase))
             {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Action not allowed with pending or under request user status";
-                Session["userresultF"] = message;
+                Session["userresultF"] = "Action not allowed: only deactivated users can be activated.";
                 return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Rejected"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "Please submit a new request or delete this user";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Active"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = "User Already Activated";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
-            }
-
-            if (sts.Equals("Un Autherize"))
-            {
-                // ModelState.AddModelError("", "Can Not Reset Password");
-                // return View("Users");
-                String message = " Unautherized users are not allowed";
-                Session["userresultF"] = message;
-                return RedirectToAction("Users", "User");
-                // return View("Users");
             }
 
             int records = ds.Active(id);

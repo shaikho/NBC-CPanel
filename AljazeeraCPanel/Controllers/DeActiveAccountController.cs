@@ -1,4 +1,4 @@
-﻿using AljazeeraCPanel.Models;
+﻿﻿using AljazeeraCPanel.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,7 +51,9 @@ namespace AljazeeraCPanel.Controllers
 
         }
 
+        // WAPT05: anti-forgery on this state-changing POST.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult UpdateCustomerSts(CustomerRegBankinfo model)
         {
             if (Session["user_name"] == null)
@@ -66,11 +68,13 @@ namespace AljazeeraCPanel.Controllers
 
             try
             {
-
-                if (model.status.Equals("DA"))
+                // WAPT04/06: a deactivation request may only be raised on a customer whose
+                // REAL current status is Active. Re-derived from the DB so a tampered
+                // "status" field cannot bypass the approval workflow.
+                string realCode = ds.getCustomerStatusCode(model.Branch) ?? "";
+                if (!realCode.Equals("A", StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AddModelError("", "User Already De-Activated");
-                    Session["acresult"] = "User Already De-Activated ";
+                    Session["deresult"] = "Deactivation request not allowed: customer is not in an active state.";
                     return RedirectToAction("DeActiveCustomer", model);
                 }
 
