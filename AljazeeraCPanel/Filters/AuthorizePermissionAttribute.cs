@@ -53,6 +53,26 @@ namespace AljazeeraCPanel.Filters
             "Default1"
         };
 
+        /// <summary>
+        /// Sensitive controllers that are NOT part of the menu model but perform
+        /// high-impact operations (retrieve customer passwords, hard-delete customers,
+        /// system monitoring). Because they are not menu-mapped they would otherwise
+        /// fall through to "any authenticated user"; instead they are restricted to the
+        /// Admin role. Adjust the role list here if these need to be delegated.
+        /// </summary>
+        private static readonly HashSet<string> AdminOnlyControllers = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "getpassword",     // retrieves / SMS customer passwords
+            "DeleteCustomer",  // hard-deletes customers
+            "Monitoring"       // system monitoring
+        };
+
+        /// <summary>Role IDs permitted to reach the AdminOnlyControllers set.</summary>
+        private static readonly HashSet<string> AdminRoleIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "1"                // Admin
+        };
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var controllerName = (string)filterContext.RouteData.Values["controller"];
@@ -71,6 +91,33 @@ namespace AljazeeraCPanel.Filters
             // 2) Support pages: session auth is sufficient.
             if (controllerName != null && AlwaysAllow.Contains(controllerName))
             {
+                base.OnActionExecuting(filterContext);
+                return;
+            }
+
+            // 2b) Sensitive non-menu controllers: Admin role only.
+            if (controllerName != null && AdminOnlyControllers.Contains(controllerName))
+            {
+                string roleId0 = session["user_roleid"] != null ? session["user_roleid"].ToString() : "";
+                if (AdminRoleIds.Contains(roleId0.Trim()))
+                {
+                    base.OnActionExecuting(filterContext);
+                    return;
+                }
+
+                string user0 = session["user_log"] != null ? session["user_log"].ToString() : "?";
+                if (IsEnforcing())
+                {
+                    System.Diagnostics.Trace.TraceWarning(
+                        "[WAPT03-02][ENFORCE] Denied (admin-only) user='{0}' role='{1}' -> {2}/{3}",
+                        user0, roleId0, controllerName, actionName);
+                    filterContext.Result = new HttpStatusCodeResult(System.Net.HttpStatusCode.Forbidden);
+                    base.OnActionExecuting(filterContext);
+                    return;
+                }
+                System.Diagnostics.Trace.TraceWarning(
+                    "[WAPT03-02][LOGONLY] Would deny (admin-only) user='{0}' role='{1}' -> {2}/{3}",
+                    user0, roleId0, controllerName, actionName);
                 base.OnActionExecuting(filterContext);
                 return;
             }
