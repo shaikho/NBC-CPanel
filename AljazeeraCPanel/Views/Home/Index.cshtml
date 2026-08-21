@@ -31,13 +31,14 @@
             font-family: 'Almarai-Regular', sans-serif;
         }
 
+        /* NBE brand: green sidebar (was navy #0A0A29), maze texture kept */
         #sidebar {
-            background-color: #0A0A29;
+            background-color: #1A7A3C;
             background-image: url('../../Images/jsb_images/maze-white.png') !important;
         }
 
         #englishnavbar ul li a:hover {
-            background-color: #F39200;
+            background-color: #F5871F;
         }
 
         .navready {
@@ -57,6 +58,8 @@
     <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
     <link href="~/Content/mdb.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/Content/style.css">
+    <!-- NBE (Khartoum) brand theme — load last so it overrides -->
+    <link rel="stylesheet" href="~/Content/nbe-theme.css">
     <link href="~/Images/jsb_images/logo_transperant" rel="shortcut icon" type="image/x-icon" />
     <script src="~/Scripts/jquery-3.4.1.js"></script>
     <script src="~/Scripts/chart.js"></script>
@@ -66,7 +69,7 @@
 <body>
     <div class="wrapper">
         <div class="navready">
-            <nav id="sidebar" style="width: 30%; min-height: 100%; font-size: 12px; background-color: #0A0A29">
+            <nav id="sidebar" style="width: 30%; min-height: 100%; font-size: 12px; background-color: #1A7A3C">
                 <div class="sidebar-header" style="background-color: #ffffff; background-image: url('../../Images/jsb_images/maze-white.png');">
                     <a href="@Url.Action("Index", "Home")"><img src="~/Images/jsb_images/Capture-removebg-preview.png" style="width:90%;height:20%;position: relative;margin-left:5%" /></a>
                 </div>
@@ -74,8 +77,9 @@
             </nav>
         </div>
         <div class="container body-content" style="width:100%;height:100%;overflow-x:hidden;overflow-y:hidden">
-            <h4 style="position:absolute;left:80%;top:4%;color:#EB9815"> You're logged in as @ViewData["adminname"].ToString()</h4>
-            <h2 style="color:#EB9815;position:relative;left:2%">Home</h2><br />
+            <h4 style="position:absolute;left:80%;top:4%"> You're logged in as @ViewData["adminname"].ToString()</h4>
+            <h2>Home</h2>
+            <br />
             @if (ViewBag.SuccessMessage != null)
             {
                 <div class="alert alert-success" role="alert">

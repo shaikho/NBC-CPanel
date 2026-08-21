@@ -30,17 +30,17 @@ body {
     border-image: var(--nbe-bar) 1;   /* gold→orange accent stripe, echoes the logo underline */
 }
 
-/* ---------- sidebar (was dark navy) ---------- */
+/* ---------- sidebar (was dark navy) — NBE green base, maze texture kept ---------- */
 .navready,
 #sidebar {
     background-color: var(--nbe-green) !important;
-    background-image: linear-gradient(180deg, var(--nbe-green-dark) 0%, var(--nbe-green) 100%) !important;
+    background-image: url('/Images/jsb_images/maze-white.png') !important;
 }
 
-/* keep the logo header on white */
+/* keep the logo header on white, with the maze texture */
 #sidebar .sidebar-header {
     background-color: #ffffff !important;
-    background-image: none !important;
+    background-image: url('/Images/jsb_images/maze-white.png') !important;
     border-bottom: 3px solid var(--nbe-gold);
 }
 
@@ -112,21 +112,17 @@ button[type="submit"].btn:not(.btn-danger):not(.btn-primary):not(.btn-success) {
     border-color: #96271b !important;
 }
 
-/* Legacy inline-coloured buttons across the app (gold/orange hex baked into style="")
-   — a CSS !important rule still beats a non-important inline declaration. */
-[style*="#fdc654"],
-[style*="#EB9815"],
-[style*="#eb9815"],
-[style*="#24295E"],
-[style*="#24295e"],
-[style*="#0A0A29"] {
+/* Legacy inline-coloured BUTTONS only (gold/orange/navy hex baked into style="").
+   Scoped to actionable elements so it never repaints text/headings that merely use
+   one of these hex codes as a font colour (e.g. <h2 style="color:#EB9815">). */
+button[style*="#fdc654"], .btn[style*="#fdc654"], input[type="submit"][style*="#fdc654"], input[type="button"][style*="#fdc654"],
+button[style*="#EB9815"], .btn[style*="#EB9815"], input[type="submit"][style*="#EB9815"], input[type="button"][style*="#EB9815"],
+button[style*="#eb9815"], .btn[style*="#eb9815"], input[type="submit"][style*="#eb9815"], input[type="button"][style*="#eb9815"],
+button[style*="#24295E"], .btn[style*="#24295E"], input[type="submit"][style*="#24295E"], input[type="button"][style*="#24295E"],
+button[style*="#0A0A29"], .btn[style*="#0A0A29"], input[type="submit"][style*="#0A0A29"], input[type="button"][style*="#0A0A29"] {
     background: var(--nbe-bar) !important;
-    border-color: var(--nbe-gold) !important;
-}
-
-/* keep white/plain surfaces readable if they were forced navy */
-[style*="#0A0A29"] {
-    background: var(--nbe-green) !important;
+    border: none !important;
+    color: #ffffff !important;
 }
 
 /* ---------- tables ---------- */
