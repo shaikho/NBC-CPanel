@@ -135,9 +135,15 @@ namespace AljazeeraCPanel.Controllers
                     if (result.lblconfirm.Equals("home"))
                     {
                         RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
+                        // Clear any pre-authentication values. NOTE: we intentionally do NOT
+                        // Abandon() or rotate the session id mid-request here — Abandon marks
+                        // the session for destruction at end-of-request (so the values written
+                        // below are discarded), and the bare SaveSessionID rotation persisted
+                        // this request's data under the OLD id while handing the browser the NEW
+                        // id — either way the user landed back on Login. Session cookies remain
+                        // HttpOnly + Secure + SameSite (WAPT08-02). A correct id-rotation can be
+                        // reintroduced with a data-preserving implementation if required.
                         Session.Clear();
-                        Session.Abandon();
-                        RegenerateSessionId();
 
                         Session["cpanelLogin"] = "true";
                         Session["accesstoken"] = accesstoken;
@@ -161,9 +167,9 @@ namespace AljazeeraCPanel.Controllers
                     else
                 if (result.lblconfirm.Equals("change_pass"))
                     {
+                        // See note in the "home" branch: do not Abandon()/rotate mid-request
+                        // or the written values are lost and login bounces back to Login.
                         Session.Clear();
-                        Session.Abandon();
-                        RegenerateSessionId();
 
                         RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
                         Session["cpanelLogin"] = "changepass";

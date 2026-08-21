@@ -1,9 +1,8 @@
-﻿using FCBCPanel.Models;
-using Newtonsoft.Json.Linq;
-using AljazeeraCPanel.Context;
+﻿using AljazeeraCPanel.Context;
 using AljazeeraCPanel.Filters;
 using AljazeeraCPanel.Models;
 using AljazeeraCPanel.Repository;
+using Newtonsoft.Json.Linq;
 using SIBCPanel.Context;
 using System;
 using System.Collections.Generic;
@@ -35,17 +34,27 @@ namespace AljazeeraCPanel.Controllers
             Boolean isazalive = false;
             Boolean isebsalive = false;
               
-            string apirespone = Connecttocore.getCustomersCounts(Session["accesstoken"].ToString());
-            JObject response = new JObject();
-            response = JObject.Parse(apirespone);
-
-            int responseCode = int.Parse(response.GetValue("Response_Code").ToString());
-            if (responseCode == 0)
+            int responseCode = -1;
+            // The dashboard counts come from the core-banking API. If that host is not
+            // reachable (e.g. a local/UAT box without core connectivity), don't let the
+            // whole dashboard 500 — render it with default/empty counts instead.
+            try
             {
-                dashboard.AccountCustomersCount = response.GetValue("Acc_Customers_Count").ToString();
-                dashboard.LinkedAccountCount = response.GetValue("Linked_Acc_Counts").ToString();
-                dashboard.CardCustomersCount = response.GetValue("Card_Customers_Count").ToString();
-                dashboard.TotalCustomersCount = response.GetValue("Total_Customers_Count").ToString();
+                string apirespone = Connecttocore.getCustomersCounts(Session["accesstoken"].ToString());
+                JObject response = JObject.Parse(apirespone);
+
+                responseCode = int.Parse(response.GetValue("Response_Code").ToString());
+                if (responseCode == 0)
+                {
+                    dashboard.AccountCustomersCount = response.GetValue("Acc_Customers_Count").ToString();
+                    dashboard.LinkedAccountCount = response.GetValue("Linked_Acc_Counts").ToString();
+                    dashboard.CardCustomersCount = response.GetValue("Card_Customers_Count").ToString();
+                    dashboard.TotalCustomersCount = response.GetValue("Total_Customers_Count").ToString();
+                }
+            }
+            catch (Exception)
+            {
+                // core banking API unavailable — dashboard still loads with default counts.
             }
 
 

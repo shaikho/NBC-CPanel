@@ -314,7 +314,6 @@
     <Content Include="Content\bootstrap-reboot.css.map" />
     <Content Include="Content\bootstrap-reboot.min.css.map" />
     <Content Include="fonts\glyphicons-halflings-regular - Copy.woff2" />
-    <Content Include="FX-NBE-Sudan Internet banking-WAPT-Report-v1.0_unlocked.pdf" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile1.pubxml" />
     <None Include="Properties\PublishProfiles\FolderProfile10.pubxml" />
