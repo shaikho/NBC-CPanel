@@ -1,17 +1,25 @@
 ﻿@model IEnumerable<AljazeeraCPanel.Models.Menu>
 
 <style>
-    /* NBE brand: menu items sit transparently on the green sidebar, orange on hover */
+    /* NBE brand: green menu items with the maze texture (page-relative path),
+       orange on hover. Mirrors the original navy+maze design, recoloured to green. */
     #englishnavbar ul li a {
-        background-color: transparent;
-        background-image: none;
+        background-color: #1A7A3C;
+        background-image: url('../../Images/jsb_images/maze-white.png');
         color: #ffffff;
     }
 
         #englishnavbar ul li a:hover {
             background-color: #F5871F;
-            background-image: none;
+            background-image: url('../../Images/jsb_images/maze-white.png');
             color: #ffffff;
+        }
+
+        /* Restore the expand/collapse caret anchor: style.css draws the arrow via
+           a[aria-expanded]::before, but it was positioned by a[data-toggle="collapse"]
+           which we removed — so re-add position:relative on our toggle links. */
+        #englishnavbar a.js-submenu-toggle {
+            position: relative;
         }
 </style>
 
@@ -25,7 +33,7 @@
                 if (submenu != null && submenu.Count > 0)
                 {
                     <li style="color:#FAFAFA">
-                        <a href="#@m.MID" data-toggle="collapse" aria-expanded="false">
+                        <a href="#@m.MID" class="js-submenu-toggle" aria-expanded="false">
                             @m.MenuName
                         </a>
                         <ul class="collapse list-unstyled" id="@m.MID">
@@ -35,7 +43,7 @@
                                 if (submenu2 != null && submenu2.Count > 0)
                                 {
                                     <li>
-                                        <a href="#@e.MID" data-toggle="collapse" aria-expanded="false">
+                                        <a href="#@e.MID" class="js-submenu-toggle" aria-expanded="false">
                                             @e.MenuName
                                         </a>
                                         <ul id="@e.MID" class="collapse list-unstyled">
@@ -72,3 +80,28 @@
         <li><a href="@Url.Action("Logout", "Home")" style="color:#FAFAFA"> Logout <img src="~/Images/Exit_64px(white).png" width="35" height="35" style="position:relative;left:69%" /></a></li>
     </ul>
 </div>
+
+@* Self-contained sidebar submenu toggle.
+   The layout pages load jQuery twice and both Bootstrap and MDB (mdb.js) bind to
+   data-toggle="collapse", which double-fired and left submenus stuck open. This
+   handler owns the toggle instead, so behaviour is identical on every page. *@
+<script type="text/javascript">
+    (function ($) {
+        if (!$) { return; }
+        $(function () {
+            $('#englishnavbar')
+                .off('click.nbeSubmenu')
+                .on('click.nbeSubmenu', 'a.js-submenu-toggle', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var id = ($(this).attr('href') || '').replace('#', '');
+                    var target = id ? document.getElementById(id) : null;
+                    if (target) {
+                        $(target).stop(true, true).slideToggle(150);
+                        $(this).toggleClass('open').attr('aria-expanded',
+                            $(this).hasClass('open') ? 'true' : 'false');
+                    }
+                });
+        });
+    })(window.jQuery);
+</script>
