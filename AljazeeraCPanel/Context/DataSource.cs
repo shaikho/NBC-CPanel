@@ -2,26 +2,16 @@
 using AljazeeraCPanel.Models;
 using cpanel.Models;
 using FCBCPanel.Models;
-using iTextSharp.text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Bcpg.OpenPgp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.Common;
 using System.Data.OracleClient;
-using System.Globalization;
 using System.IO;
-using System.Security.AccessControl;
 using System.Security.Cryptography;
-using System.Security.Policy;
 using System.Text;
 using System.Web.Mvc;
-using System.Web.Mvc.Ajax;
-using System.Web.Security;
-using System.Web.Util;
 
 namespace SIBCPanel.Context
 {
@@ -6629,14 +6619,53 @@ namespace SIBCPanel.Context
 
         public string CreatePassword(int length)
         {
-            const string valid = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            StringBuilder res = new StringBuilder();
-            Random rnd = new Random();
-            while (0 < length--)
+            // WAPT02: generated temp passwords must satisfy PasswordPolicyValidator, which
+            // runs at login (>=8 chars, upper + lower + digit + special, no 3 sequential
+            // or 3 repeated chars). The previous generator was alphanumeric-only, so new
+            // users could never log in with their SMS'd password. Ambiguous characters
+            // (0/O, 1/l/I) are excluded so the SMS'd password is easy to read.
+            if (length < 8) length = 8;
+            const string upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+            const string lower = "abcdefghijkmnpqrstuvwxyz";
+            const string digits = "23456789";
+            const string special = "!@#$%*?";
+            string all = upper + lower + digits + special;
+            Random rnd = new Random(Guid.NewGuid().GetHashCode());
+
+            for (int attempt = 0; attempt < 100; attempt++)
             {
-                res.Append(valid[rnd.Next(valid.Length)]);
+                char[] p = new char[length];
+                // guarantee one of each required category
+                p[0] = upper[rnd.Next(upper.Length)];
+                p[1] = lower[rnd.Next(lower.Length)];
+                p[2] = digits[rnd.Next(digits.Length)];
+                p[3] = special[rnd.Next(special.Length)];
+                for (int i = 4; i < length; i++)
+                    p[i] = all[rnd.Next(all.Length)];
+                // Fisher–Yates shuffle so the required chars aren't always in front
+                for (int i = p.Length - 1; i > 0; i--)
+                {
+                    int j = rnd.Next(i + 1);
+                    char t = p[i]; p[i] = p[j]; p[j] = t;
+                }
+                string candidate = new string(p);
+                if (!HasSequentialOrRepeated(candidate))
+                    return candidate;
             }
-            return res.ToString();
+            // Extremely unlikely fallback — still policy-compliant.
+            return "Nbe$" + rnd.Next(100, 999) + "xQ";
+        }
+
+        // Mirrors PasswordPolicyValidator: reject 3 ascending/descending or 3 repeated chars.
+        private static bool HasSequentialOrRepeated(string s)
+        {
+            for (int i = 0; i < s.Length - 2; i++)
+            {
+                char a = s[i], b = s[i + 1], c = s[i + 2];
+                if (a == b && b == c) return true;                 // repeated
+                if ((b == a + 1 && c == b + 1) || (b == a - 1 && c == b - 1)) return true; // sequential
+            }
+            return false;
         }
 
 
