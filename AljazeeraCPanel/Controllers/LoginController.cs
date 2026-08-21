@@ -38,7 +38,7 @@ namespace AljazeeraCPanel.Controllers
             return View();
         }
 
-        [HttpPost] 
+        [HttpPost]
         public ActionResult Login(Loginmodel model)
         {
 
@@ -71,65 +71,50 @@ namespace AljazeeraCPanel.Controllers
                     return View(model);
                 }
 
-                // We do not want to use any existing identity information
+                //We do not want to use any existing identity information
 
-                //Connecttocore.getconfig();
-                //Uri requestUri = new Uri(Connecttocore.BASE_URL + "/cpLogin");
-                //string datetimenow = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
-
-
-                //dynamic dynamicJson = new ExpandoObject();
-
-                //dynamicJson.User_ID = model.Username;
-                //dynamicJson.Password = model.Password;
-                //dynamicJson.ChannelID = 3;
-                //dynamicJson.Device_Key = "02bff589f9324810";
-
-                //string json = "";
-                //json = JsonConvert.SerializeObject(dynamicJson);
-                //var responJsonText = "";
-                //JObject JResp = new JObject();
-                //System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
-                //using (var objClient = new HttpClient())
-                //{
-                //    try
-                //    {
+                Connecttocore.getconfig();
+                Uri requestUri = new Uri(Connecttocore.BASE_URL + "/cpLogin");
+                string datetimenow = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss");
 
 
-                //        HttpResponseMessage respon = objClient
-                //            .PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+                dynamic dynamicJson = new ExpandoObject();
 
+                dynamicJson.User_ID = model.Username;
+                dynamicJson.Password = model.Password;
+                dynamicJson.ChannelID = 3;
+                dynamicJson.Device_Key = "02bff589f9324810";
 
-                //        if (respon.IsSuccessStatusCode)
-                //        {
-                //            logincallresponse = respon.Content.ReadAsStringAsync().Result;
-                //            accesstoken = respon.Headers.GetValues("Authorization").FirstOrDefault();
-                //        }
+                string json = "";
+                json = JsonConvert.SerializeObject(dynamicJson);
+                var responJsonText = "";
+                JObject JResp = new JObject();
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
+                using (var objClient = new HttpClient())
+                {
+                    try
+                    {
+                        HttpResponseMessage respon = objClient.PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
 
-                //    }
+                        if (respon.IsSuccessStatusCode)
+                        {
+                            logincallresponse = respon.Content.ReadAsStringAsync().Result;
+                            accesstoken = respon.Headers.GetValues("Authorization").FirstOrDefault();
+                        }
+                    }
+                    catch (Exception e)
+                    {
 
-                //    catch (Exception e)
-                //    { 
+                        logincallresponse = "Error";
+                    }
+                }
 
-                //        logincallresponse = "Error";
-                //    }
+                JObject response = new JObject();
+                response = JObject.Parse(logincallresponse);
 
-
-                //}
-
-
-
-
-                //JObject response = new JObject();
-                //response = JObject.Parse(logincallresponse);
-
-
-                //if (int.Parse(response.GetValue("Response_Code").ToString()) == 0)
-                //{
-
-
+                if (int.Parse(response.GetValue("Response_Code").ToString()) == 0)
+                {
                     result = ds.checkuserlogin(model.Username, model.Password, ipAddress);
 
                     if (result.lblconfirm.Equals("home"))
@@ -165,52 +150,40 @@ namespace AljazeeraCPanel.Controllers
                     }
 
                     else
-                if (result.lblconfirm.Equals("change_pass"))
-                    {
-                        // See note in the "home" branch: do not Abandon()/rotate mid-request
-                        // or the written values are lost and login bounces back to Login.
-                        Session.Clear();
+                        if (result.lblconfirm.Equals("change_pass"))
+                        {
+                            // See note in the "home" branch: do not Abandon()/rotate mid-request
+                            // or the written values are lost and login bounces back to Login.
+                            Session.Clear();
 
-                        RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
-                        Session["cpanelLogin"] = "changepass";
-                        Session["accesstoken"] = accesstoken;
-                        Session["user_log"] = model.Username;
-                        Session["UserId"] = result.UserId;
-                        Session["user_name"] = result.user_name;
-                        Session["user_branch"] = result.user_branch;
-                        Session["user_roleid"] = result.user_roleid;
-                        List<int> list = ds.GetOnlineOfflineUsers(result.user_branch);
-                        Session["onlineofflineusers"] = list;
-                        return RedirectToAction("Changepassword");
-                    }
-                    else
-                    {
-                        // WAPT07: record a failed attempt against the IP+username window.
-                        RateLimiter.RegisterAttempt(rlKey, 15);
-                        ModelState.AddModelError("", result.lblconfirm);
-                        return View(model);
-                    }
+                            RateLimiter.Reset(rlKey); // WAPT07: clear the counter on success
+                            Session["cpanelLogin"] = "changepass";
+                            Session["accesstoken"] = accesstoken;
+                            Session["user_log"] = model.Username;
+                            Session["UserId"] = result.UserId;
+                            Session["user_name"] = result.user_name;
+                            Session["user_branch"] = result.user_branch;
+                            Session["user_roleid"] = result.user_roleid;
+                            List<int> list = ds.GetOnlineOfflineUsers(result.user_branch);
+                            Session["onlineofflineusers"] = list;
+                            return RedirectToAction("Changepassword");
+                        }
+                        else
+                        {
+                            // WAPT07: record a failed attempt against the IP+username window.
+                            RateLimiter.RegisterAttempt(rlKey, 15);
+                            ModelState.AddModelError("", result.lblconfirm);
+                            return View(model);
+                        }
 
-                    /////
-
-
-
-
-
-
-                    //Session["user_status"] = result.status;
-
-
-
-                   // return RedirectToAction("Index", "Home");
-
-
-                //}
-                //else
-                //{
-                //    ModelState.AddModelError("", response.GetValue("Response_Message").ToString());
-                //    return View(model);
-                //}
+                    Session["user_status"] = result.status;
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", response.GetValue("Response_Message").ToString());
+                    return View(model);
+                }
             }
             catch (Exception e)
             {
